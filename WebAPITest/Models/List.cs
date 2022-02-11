@@ -12,11 +12,11 @@ namespace WebAPITest.Models
             Memberlikelists = new HashSet<Memberlikelist>();
         }
 
-        public int ListId { get; set; }
-        public string ListName { get; set; }
-        public int ListCreatorMemberId { get; set; }
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public int MemberId { get; set; }
 
-        public virtual Member ListCreatorMember { get; set; }
+        public virtual Member Member { get; set; }
         public virtual ICollection<Memberlikelist> Memberlikelists { get; set; }
     }
 }

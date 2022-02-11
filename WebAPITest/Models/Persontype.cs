@@ -12,7 +12,7 @@ namespace WebAPITest.Models
             Filmpeople = new HashSet<Filmperson>();
         }
 
-        public int PersonTypeId { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; }
 
         public virtual ICollection<Filmperson> Filmpeople { get; set; }

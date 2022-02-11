@@ -12,8 +12,8 @@ namespace WebAPITest.Models
             Filmgenres = new HashSet<Filmgenre>();
         }
 
-        public int GenreId { get; set; }
-        public string GenreName { get; set; }
+        public int Id { get; set; }
+        public string Name { get; set; }
 
         public virtual ICollection<Filmgenre> Filmgenres { get; set; }
     }

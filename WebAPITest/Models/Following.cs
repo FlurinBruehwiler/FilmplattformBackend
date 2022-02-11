@@ -7,10 +7,10 @@ namespace WebAPITest.Models
 {
     public partial class Following
     {
-        public int FollowingFollowerMemberId { get; set; }
-        public int FollowingFollowingMemberId1 { get; set; }
+        public int FollowerId { get; set; }
+        public int FollowingId1 { get; set; }
 
-        public virtual Member FollowingFollowerMember { get; set; }
-        public virtual Member FollowingFollowingMemberId1Navigation { get; set; }
+        public virtual Member Follower { get; set; }
+        public virtual Member FollowingId1Navigation { get; set; }
     }
 }

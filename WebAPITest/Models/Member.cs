@@ -15,12 +15,12 @@ namespace WebAPITest.Models
             Watchevents = new HashSet<Watchevent>();
         }
 
-        public int MemberId { get; set; }
-        public string MemberUsername { get; set; }
-        public string MemberName { get; set; }
-        public string MemberVorname { get; set; }
-        public string MemberEmail { get; set; }
-        public string MemberBio { get; set; }
+        public int Id { get; set; }
+        public string Username { get; set; }
+        public string Name { get; set; }
+        public string Vorname { get; set; }
+        public string Email { get; set; }
+        public string Bio { get; set; }
 
         public virtual ICollection<Filmmember> Filmmembers { get; set; }
         public virtual ICollection<List> Lists { get; set; }

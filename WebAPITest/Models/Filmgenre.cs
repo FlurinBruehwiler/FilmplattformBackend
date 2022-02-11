@@ -7,10 +7,10 @@ namespace WebAPITest.Models
 {
     public partial class Filmgenre
     {
-        public int FilmGenreGenreId { get; set; }
-        public int FilmGenreFilmId { get; set; }
+        public int GenreId { get; set; }
+        public int FilmId { get; set; }
 
-        public virtual Film FilmGenreFilm { get; set; }
-        public virtual Genre FilmGenreGenre { get; set; }
+        public virtual Film Film { get; set; }
+        public virtual Genre Genre { get; set; }
     }
 }

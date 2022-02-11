@@ -7,14 +7,14 @@ namespace WebAPITest.Models
 {
     public partial class Filmmember
     {
-        public int FilmMemberMemberId { get; set; }
-        public int FilmMemberFilmId { get; set; }
-        public byte? FilmMemberLike { get; set; }
-        public DateTime? FilmMemberLikeDate { get; set; }
-        public byte? FilmMemberWatchlist { get; set; }
-        public DateTime? FilmMemberWatchlistDate { get; set; }
+        public int MemberId { get; set; }
+        public int FilmId { get; set; }
+        public byte? Like { get; set; }
+        public DateTime? LikeDate { get; set; }
+        public byte? Watchlist { get; set; }
+        public DateTime? WatchlistDate { get; set; }
 
-        public virtual Film FilmMemberFilm { get; set; }
-        public virtual Member FilmMemberMember { get; set; }
+        public virtual Film Film { get; set; }
+        public virtual Member Member { get; set; }
     }
 }

@@ -7,10 +7,10 @@ namespace WebAPITest.Models
 {
     public partial class Memberlikelist
     {
-        public int MemberLikeListMemberId { get; set; }
-        public int MemberLikeListListId { get; set; }
+        public int MemberId { get; set; }
+        public int ListId { get; set; }
 
-        public virtual List MemberLikeListList { get; set; }
-        public virtual Member MemberLikeListMember { get; set; }
+        public virtual List List { get; set; }
+        public virtual Member Member { get; set; }
     }
 }
