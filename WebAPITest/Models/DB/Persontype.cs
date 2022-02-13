@@ -1,20 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿#nullable disable
 
-#nullable disable
-
-namespace WebAPITest.Models
+namespace WebAPITest.Models.DB
 {
-    public partial class Person
+    public partial class Persontype
     {
-        public Person()
+        public Persontype()
         {
             Filmpeople = new HashSet<Filmperson>();
         }
 
         public int Id { get; set; }
         public string Name { get; set; }
-        public string Bio { get; set; }
 
         public virtual ICollection<Filmperson> Filmpeople { get; set; }
     }

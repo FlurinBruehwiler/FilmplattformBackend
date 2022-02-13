@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿#nullable disable
 
-#nullable disable
-
-namespace WebAPITest.Models
+namespace WebAPITest.Models.DB
 {
     public partial class Genre
     {

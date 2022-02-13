@@ -1,10 +1,8 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
+﻿using Microsoft.EntityFrameworkCore;
 
 #nullable disable
 
-namespace WebAPITest.Models
+namespace WebAPITest.Models.DB
 {
     public partial class filmplattformContext : DbContext
     {
@@ -35,6 +33,7 @@ namespace WebAPITest.Models
             if (!optionsBuilder.IsConfigured)
             {
                 optionsBuilder.UseMySQL("Server=127.0.0.1; Port=3306; Database=filmplattform; Uid=root; Pwd=secret;");
+                optionsBuilder.EnableDetailedErrors();
             }
         }
 
@@ -103,6 +102,9 @@ namespace WebAPITest.Models
                     .HasName("PRIMARY");
 
                 entity.ToTable("filmmember");
+
+                entity.HasIndex(e => new { e.MemberId, e.FilmId }, "filmMemberUnique")
+                    .IsUnique();
 
                 entity.HasIndex(e => e.FilmId, "fk_Member_has_Film_Film1_idx");
 
