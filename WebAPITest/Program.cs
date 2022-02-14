@@ -5,13 +5,10 @@ using WebAPITest.Models.DB;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var provider = builder.Services.BuildServiceProvider();
-var configuration = provider.GetRequiredService<IConfiguration>();
-
 builder.Services.AddHttpClient();
 builder.Services.AddHttpClient("tmdb", c =>
 {
-    c.BaseAddress = new Uri(configuration.GetValue<string>("TmdbAPI"));
+    c.BaseAddress = new Uri("https://api.themoviedb.org/3/");
 });
 // Add services to the container.
 
