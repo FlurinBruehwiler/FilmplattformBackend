@@ -1,7 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using WebAPITest.Models;
 using WebAPITest.Models.DB;
 using WebAPITest.Models.DTO;
 using WebAPITest.Models.TMDB;
@@ -44,7 +43,7 @@ public class MoviesController : ControllerBase
                 throw new Exception();
             }
         }
-        catch (Exception e)
+        catch (Exception)
         {
             return NotFound();
         }
@@ -60,7 +59,14 @@ public class MoviesController : ControllerBase
             await _movieImporter.AddMovieToDb(id);
         }
 
-        var film = await _db.Films.FindAsync(id);
+        var film = _db.Films.Where(movie => movie.Id == id)
+            .Include(movie => movie.Filmgenres)
+            .ThenInclude(movieGenre => movieGenre.Genre)
+            .Include(movie => movie.Filmpeople)
+            .ThenInclude(t => t.Person)
+            .Include(movie => movie.Filmpeople)
+            .ThenInclude(t => t.PersonType)
+            .FirstOrDefault();
 
         if (film != null)
             return new DtoMovie(film);
@@ -70,6 +76,6 @@ public class MoviesController : ControllerBase
 
     private bool MovieExists(int id)
     {
-        return _db.Films.Any(x => x.Id == id);
+        return _db.Films.AsNoTracking().Any(x => x.Id == id);
     }
 }

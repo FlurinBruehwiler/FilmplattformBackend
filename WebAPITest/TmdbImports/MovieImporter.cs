@@ -1,4 +1,6 @@
-﻿using System.Globalization;
+﻿using System.Configuration;
+using System.Globalization;
+using Microsoft.EntityFrameworkCore;
 using WebAPITest.Models.DB;
 using WebAPITest.Models.TMDB;
 
@@ -41,11 +43,15 @@ public class MovieImporter
             LongDescription = tmdbMovie.LongDescription,
             ReleaseDate = DateTime.Parse(tmdbMovie.ReleaseDate ?? DateTime.Now.ToString(CultureInfo.InvariantCulture)),
         };
-        
+
         AddGenresToMovie(genres, film);
         AddPersonToMovie(people, film);
-
+        
+        Console.WriteLine(_db.ChangeTracker.DebugView.ShortView);
+        Console.Write("-------------------");
         _db.Films.Add(film);
+        Console.WriteLine(_db.ChangeTracker.DebugView.ShortView);
+
         await _db.SaveChangesAsync();
     }
 
@@ -71,17 +77,20 @@ public class MovieImporter
         return tmdbMovie;
     }
 
-    private void AddPersonToMovie(List<(Person, string)>? people, Film film)
+    private void AddPersonToMovie(List<(Person Person, string Departement)>? people, Film film)
     {
         if(people == null)
             return;
         
         foreach (var p in people)
         {
-            var person = p.Item1;
-            var type = p.Item2;
-            
-            var personType = _personTypeImporter.GetPersonType(type);
+            var person = p.Person;
+            var personType = _personTypeImporter.GetPersonType(p.Departement);
+
+            if(film.Filmpeople.Any(f => f.Film.Id == film.Id && f.Person.Id == person.Id && f.PersonType.Id == personType.Id))
+            {
+                return;
+            }
             
             var filmPerson = new Filmperson
             {
@@ -89,7 +98,12 @@ public class MovieImporter
                 Person = person,
                 PersonType = personType
             };
-            
+
+            if (person.Id == 947)
+            {
+                Console.WriteLine("tset");
+            }
+
             film.Filmpeople.Add(filmPerson);
         }
     }
@@ -107,9 +121,14 @@ public class MovieImporter
             film.Filmgenres.Add(filmGenre);
         }
     }
+
+    private bool FilmGenreExists(Film film, Genre genre)
+    {
+        return _db.Filmgenres.AsNoTracking().Any(x => x.FilmId == film.Id && x.GenreId == genre.Id);
+    }
     
     private bool MovieExists(int id)
     {
-        return _db.Films.Any(x => x.Id == id);
+        return _db.Films.AsNoTracking().Any(x => x.Id == id);
     }
 }

@@ -11,6 +11,7 @@ public class DtoMovie
         ShortDescription = film.ShortDescription;
         LongDescription = film.LongDescription;
         Genres = film.Filmgenres.Select(x => new DtoGenre(x.Genre)).ToList();
+        People = film.Filmpeople.Select(x => new DtoPerson(x)).ToList();
     }
     
     public int Id { get; set; }
@@ -19,4 +20,5 @@ public class DtoMovie
     public string? ShortDescription { get; set; }
     public string? LongDescription { get; set; }
     public List<DtoGenre>? Genres { get; set; }
+    public List<DtoPerson>? People { get; set; }
 }

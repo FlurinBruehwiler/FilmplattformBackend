@@ -1,4 +1,5 @@
-﻿using WebAPITest.Models.DB;
+﻿using Microsoft.EntityFrameworkCore;
+using WebAPITest.Models.DB;
 using WebAPITest.Models.TMDB;
 
 namespace WebAPITest.TmdbImports;
@@ -24,13 +25,13 @@ public class GenreImporter
         
         foreach (var tmdbGenre in tmdbGenres)
         {
-            genres.Add(AddGenreToDb(tmdbGenre));
+            genres.Add(GetGenre(tmdbGenre));
         }
 
         return genres;
     }
 
-    private Genre AddGenreToDb(TMDBGenre tmdbGenre)
+    private Genre GetGenre(TMDBGenre tmdbGenre)
     {
         if (GenreExists(tmdbGenre.Id))
             return _db.Genres.First(x => x.Id == tmdbGenre.Id);
@@ -46,6 +47,6 @@ public class GenreImporter
     
     private bool GenreExists(int id)
     {
-        return _db.Genres.Any(x => x.Id == id);
+        return _db.Genres.AsNoTracking().Any(x => x.Id == id);
     }
 }

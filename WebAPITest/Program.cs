@@ -13,7 +13,11 @@ builder.Services.AddHttpClient("tmdb", c =>
 // Add services to the container.
 
 builder.Services.AddControllers();
-builder.Services.AddDbContext<filmplattformContext>(options => options.UseMySQL("Server=127.0.0.1; Port=3306; Database=filmplattform; Uid=root; Pwd=secret;"));
+builder.Services.AddDbContext<filmplattformContext>(options =>
+{
+    options.UseMySQL("Server=127.0.0.1; Port=3306; Database=filmplattform; Uid=root; Pwd=secret;");
+    options.EnableSensitiveDataLogging();
+});
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

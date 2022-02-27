@@ -1,4 +1,5 @@
-﻿using WebAPITest.Models.DB;
+﻿using Microsoft.EntityFrameworkCore;
+using WebAPITest.Models.DB;
 
 namespace WebAPITest.TmdbImports;
 
@@ -21,13 +22,11 @@ public class PersonTypeImporter
             Name = name
         };
 
-        _db.Persontypes.Add(personType);
-
         return personType;
     }
 
     private bool PersonTypeExits(string name)
     {
-        return _db.Persontypes.Any(x => x.Name == name);
+        return _db.Persontypes.AsNoTracking().Any(x => x.Name == name);
     }
 }

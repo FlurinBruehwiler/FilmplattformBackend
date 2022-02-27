@@ -1,4 +1,6 @@
-﻿using WebAPITest.Models.DB;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using WebAPITest.Models.DB;
 using WebAPITest.Models.TMDB;
 
 namespace WebAPITest.TmdbImports;
@@ -25,14 +27,12 @@ public class PersonImporter
         var tmdbPeople = CombineCrewAndCast(credits.Crew, credits.Cast);
 
         List<(Person, string)> people = new();
-
+        
         foreach (var tmdbPerson in tmdbPeople)
         {
-            Person person;
+            var person = GetPersonIfExists(tmdbPerson.Id, people);
 
-            if (PersonExists(id))
-                person = _db.People.First(x => x.Id == id);
-            else
+            if(person == null)
             {
                 person = new Person
                 {
@@ -84,8 +84,18 @@ public class PersonImporter
         return tmdbCredits;
     }
 
-    private bool PersonExists(int id)
+    private Person? GetPersonIfExists(int id, List<(Person Person, string Departement)> addedPeople)
     {
-        return _db.People.Any(x => x.Id == id);
+        if (_db.People.Any(x => x.Id == id))
+        {
+            return _db.People.First(x => x.Id == id);
+        }
+
+        if (addedPeople.Any(person => person.Person.Id == id))
+        {
+            return addedPeople.First(tuple => tuple.Person.Id == id).Person;
+        }
+
+        return null;
     }
 }
