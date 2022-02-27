@@ -5,9 +5,9 @@ namespace WebAPITest.TmdbImports;
 
 public class PersonTypeImporter
 {
-    private readonly filmplattformContext _db;
+    private readonly FilmplattformContext _db;
 
-    public PersonTypeImporter(filmplattformContext db)
+    public PersonTypeImporter(FilmplattformContext db)
     {
         _db = db;
     }

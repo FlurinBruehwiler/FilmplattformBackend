@@ -1,16 +1,18 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 #nullable disable
 
 namespace WebAPITest.Models.DB
 {
-    public partial class filmplattformContext : DbContext
+    public partial class FilmplattformContext : DbContext
     {
-        public filmplattformContext()
+        public FilmplattformContext()
         {
         }
 
-        public filmplattformContext(DbContextOptions<filmplattformContext> options)
+        public FilmplattformContext(DbContextOptions<FilmplattformContext> options)
             : base(options)
         {
         }
@@ -32,8 +34,8 @@ namespace WebAPITest.Models.DB
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseMySQL("Server=127.0.0.1; Port=3306; Database=filmplattform; Uid=root; Pwd=secret;");
-                optionsBuilder.EnableDetailedErrors();
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+                optionsBuilder.UseMySQL("Server=127.0.0.1; Port=3306; Database=Filmplattform; Uid=root; Pwd=secret;");
             }
         }
 
@@ -48,8 +50,16 @@ namespace WebAPITest.Models.DB
 
                 entity.Property(e => e.Id).HasColumnType("int(11)");
 
+                entity.Property(e => e.BackdropUrl)
+                    .HasMaxLength(40)
+                    .HasDefaultValueSql("'NULL'");
+
                 entity.Property(e => e.LongDescription)
                     .HasMaxLength(500)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.PosterUrl)
+                    .HasMaxLength(40)
                     .HasDefaultValueSql("'NULL'");
 
                 entity.Property(e => e.ShortDescription)

@@ -8,10 +8,10 @@ namespace WebAPITest.TmdbImports;
 public class PersonImporter
 {
     private readonly IHttpClientFactory _clientFactory;
-    private readonly filmplattformContext _db;
+    private readonly FilmplattformContext _db;
     private readonly string _apiKey;
 
-    public PersonImporter(IHttpClientFactory clientFactory, IConfiguration configuration, filmplattformContext db)
+    public PersonImporter(IHttpClientFactory clientFactory, IConfiguration configuration, FilmplattformContext db)
     {
         _clientFactory = clientFactory;
         _db = db;

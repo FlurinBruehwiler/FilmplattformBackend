@@ -12,12 +12,12 @@ namespace WebAPITest.Controllers;
 [Route("[controller]")]
 public class MoviesController : ControllerBase
 {
-    private readonly filmplattformContext _db;
+    private readonly FilmplattformContext _db;
     private readonly IHttpClientFactory _clientFactory;
     private readonly string _apiKey;
     private readonly MovieImporter _movieImporter;
 
-    public MoviesController(filmplattformContext db, IHttpClientFactory clientFactory, IConfiguration configuration)
+    public MoviesController(FilmplattformContext db, IHttpClientFactory clientFactory, IConfiguration configuration)
     {
         _db = db;
         _clientFactory = clientFactory;

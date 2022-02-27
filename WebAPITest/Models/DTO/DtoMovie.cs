@@ -10,15 +10,25 @@ public class DtoMovie
         Title = film.Title;
         ShortDescription = film.ShortDescription;
         LongDescription = film.LongDescription;
+        PosterURL = film.PosterUrl;
+        BackdropURL = film.BackdropUrl;
+        ReleaseDate = film.ReleaseDate;
         Genres = film.Filmgenres.Select(x => new DtoGenre(x.Genre)).ToList();
         People = film.Filmpeople.Select(x => new DtoPerson(x)).ToList();
     }
-    
+
+    public string PosterURL { get; set; }
+    public string BackdropURL { get; set; }
     public int Id { get; set; }
     public string? Title { get; set; }
     public DateTime ReleaseDate { get; set; }
     public string? ShortDescription { get; set; }
     public string? LongDescription { get; set; }
+    public bool Like { get; set; }
+    public bool Watchlist { get; set; }
+    public float AverageRating { get; set; }
+    public List<DtoList> AvailableLists { get; set; }
+    public List<DtoWatchevent> Watchevents { get; set; }
     public List<DtoGenre>? Genres { get; set; }
     public List<DtoPerson>? People { get; set; }
 }

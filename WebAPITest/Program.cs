@@ -13,9 +13,9 @@ builder.Services.AddHttpClient("tmdb", c =>
 // Add services to the container.
 
 builder.Services.AddControllers();
-builder.Services.AddDbContext<filmplattformContext>(options =>
+builder.Services.AddDbContext<FilmplattformContext>(options =>
 {
-    options.UseMySQL("Server=127.0.0.1; Port=3306; Database=filmplattform; Uid=root; Pwd=secret;");
+    options.UseMySQL("Server=127.0.0.1; Port=3306; Database=Filmplattform; Uid=root; Pwd=secret;");
     options.EnableSensitiveDataLogging();
 });
 

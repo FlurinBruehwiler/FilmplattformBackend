@@ -6,9 +6,9 @@ namespace WebAPITest.TmdbImports;
 
 public class GenreImporter
 {
-    private readonly filmplattformContext _db;
+    private readonly FilmplattformContext _db;
 
-    public GenreImporter(IConfiguration configuration, filmplattformContext db)
+    public GenreImporter(IConfiguration configuration, FilmplattformContext db)
     {
         _db = db;
         configuration.GetValue<string>("TmdbApiKey");

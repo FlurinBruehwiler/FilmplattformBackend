@@ -9,13 +9,13 @@ namespace WebAPITest.TmdbImports;
 public class MovieImporter
 {
     private readonly IHttpClientFactory _clientFactory;
-    private readonly filmplattformContext _db;
+    private readonly FilmplattformContext _db;
     private readonly string _apiKey;
     private readonly GenreImporter _genreImporter;
     private readonly PersonImporter _personImporter;
     private readonly PersonTypeImporter _personTypeImporter;
 
-    public MovieImporter(IHttpClientFactory clientFactory, IConfiguration configuration, filmplattformContext db)
+    public MovieImporter(IHttpClientFactory clientFactory, IConfiguration configuration, FilmplattformContext db)
     {
         _clientFactory = clientFactory;
         _db = db;
@@ -47,10 +47,7 @@ public class MovieImporter
         AddGenresToMovie(genres, film);
         AddPersonToMovie(people, film);
         
-        Console.WriteLine(_db.ChangeTracker.DebugView.ShortView);
-        Console.Write("-------------------");
         _db.Films.Add(film);
-        Console.WriteLine(_db.ChangeTracker.DebugView.ShortView);
 
         await _db.SaveChangesAsync();
     }
