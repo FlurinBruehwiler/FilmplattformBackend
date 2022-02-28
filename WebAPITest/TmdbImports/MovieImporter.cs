@@ -25,12 +25,15 @@ public class MovieImporter
         _personTypeImporter = new PersonTypeImporter(db);
     }
     
-    public async Task AddMovieToDb(int id)
+    public async Task<bool> AddMovieToDb(int id)
     {
         if(MovieExists(id))
-            return;
+            return true;
 
         var tmdbMovie = await GetMovieDetailsFromTmdb(id);
+
+        if (tmdbMovie is null)
+            return false;
 
         var genres = _genreImporter.GetGenresForMovie(tmdbMovie);
         var people = await _personImporter.GetPeopleForMovie(tmdbMovie);
@@ -52,9 +55,11 @@ public class MovieImporter
         _db.Films.Add(film);
 
         await _db.SaveChangesAsync();
+
+        return true;
     }
 
-    private async Task<TMDBMovieDetails> GetMovieDetailsFromTmdb(int id)
+    private async Task<TMDBMovieDetails?> GetMovieDetailsFromTmdb(int id)
     {
         var url = $"movie/{id}?api_key={_apiKey}";
 
@@ -70,9 +75,6 @@ public class MovieImporter
             return new TMDBMovieDetails();
         }
 
-        if (tmdbMovie == null)
-            return new TMDBMovieDetails();
-        
         return tmdbMovie;
     }
 

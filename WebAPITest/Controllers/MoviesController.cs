@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using WebAPITest.Factories;
 using WebAPITest.Models.DB;
 using WebAPITest.Models.DTO;
 using WebAPITest.Models.TMDB;
@@ -17,14 +18,16 @@ public class MoviesController : ControllerBase
     private readonly FilmplattformContext _db;
     private readonly IHttpClientFactory _clientFactory;
     private readonly IUserService _userService;
+    private readonly DtoMovieFactory _dtoMovieFactory;
     private readonly string _apiKey;
     private readonly MovieImporter _movieImporter;
 
-    public MoviesController(FilmplattformContext db, IHttpClientFactory clientFactory, IConfiguration configuration, IUserService userService)
+    public MoviesController(FilmplattformContext db, IHttpClientFactory clientFactory, IConfiguration configuration, IUserService userService, DtoMovieFactory dtoMovieFactory)
     {
         _db = db;
         _clientFactory = clientFactory;
         _userService = userService;
+        _dtoMovieFactory = dtoMovieFactory;
         _apiKey = configuration.GetValue<string>("TmdbApiKey");
         _movieImporter = new MovieImporter(clientFactory, configuration, db);
     }
@@ -32,9 +35,7 @@ public class MoviesController : ControllerBase
     [HttpGet("SearchMovies/{searchString}")]
     public async Task<ActionResult<TMDBMovieSearchResult>> SearchMovies(string searchString)
     {
-        var userName = User?.Identity?.Name;
-        
-        Console.WriteLine(userName);
+        Console.WriteLine(_userService.GetId());
         
         searchString = Regex.Replace(searchString, @"\s+", "+");
         var url = $"search/movie?api_key={_apiKey}&query={searchString}";
@@ -62,27 +63,23 @@ public class MoviesController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<DtoMovie>> GetMovie(int id)
     {
-        if (!MovieExists(id))
+        if (!MovieExistsOnDb(id))
         {
-            await _movieImporter.AddMovieToDb(id);
+            if (!await _movieImporter.AddMovieToDb(id))
+            {
+                return NotFound();
+            }
         }
 
-        var film = _db.Films.Where(movie => movie.Id == id)
-            .Include(movie => movie.Filmgenres)
-            .ThenInclude(movieGenre => movieGenre.Genre)
-            .Include(movie => movie.Filmpeople)
-            .ThenInclude(t => t.Person)
-            .Include(movie => movie.Filmpeople)
-            .ThenInclude(t => t.PersonType)
-            .FirstOrDefault();
+        var movie = _dtoMovieFactory.GetDtoMovie(id);
 
-        if (film != null)
-            return new DtoMovie(film);
+        if (movie is null)
+            return NotFound();
 
-        return NotFound();
+        return Ok(movie);
     }
 
-    private bool MovieExists(int id)
+    private bool MovieExistsOnDb(int id)
     {
         return _db.Films.AsNoTracking().Any(x => x.Id == id);
     }

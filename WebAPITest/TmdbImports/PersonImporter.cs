@@ -18,7 +18,7 @@ public class PersonImporter
         _apiKey = configuration.GetValue<string>("TmdbApiKey");
     }
     
-    public async Task<List<(Person, string)>> GetPeopleForMovie(TMDBMovieDetails tmdbMovie)
+    public async Task<List<(Person, string)>> GetPeopleForMovie(TMDBMovieDetails? tmdbMovie)
     {
         var id = tmdbMovie.Id;
         

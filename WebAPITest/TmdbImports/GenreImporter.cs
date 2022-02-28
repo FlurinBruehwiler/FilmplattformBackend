@@ -14,7 +14,7 @@ public class GenreImporter
         configuration.GetValue<string>("TmdbApiKey");
     }
     
-    public List<Genre> GetGenresForMovie(TMDBMovieDetails tmdbMovie)
+    public List<Genre> GetGenresForMovie(TMDBMovieDetails? tmdbMovie)
     {
         List<Genre> genres = new();
 
