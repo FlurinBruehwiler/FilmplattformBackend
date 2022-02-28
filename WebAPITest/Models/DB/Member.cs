@@ -21,6 +21,8 @@ namespace WebAPITest.Models.DB
         public string Vorname { get; set; }
         public string Email { get; set; }
         public string Bio { get; set; }
+        public byte[] PasswordHash { get; set; }
+        public byte[] PasswordSalt { get; set; }
 
         public virtual ICollection<Filmmember> Filmmembers { get; set; }
         public virtual ICollection<List> Lists { get; set; }

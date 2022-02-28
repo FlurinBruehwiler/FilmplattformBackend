@@ -292,6 +292,14 @@ namespace WebAPITest.Models.DB
                     .HasMaxLength(45)
                     .HasDefaultValueSql("'NULL'");
 
+                entity.Property(e => e.PasswordHash)
+                    .HasColumnType("blob")
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.PasswordSalt)
+                    .HasColumnType("blob")
+                    .HasDefaultValueSql("'NULL'");
+
                 entity.Property(e => e.Username)
                     .IsRequired()
                     .HasMaxLength(45);

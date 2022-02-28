@@ -1,9 +1,11 @@
 ﻿using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebAPITest.Models.DB;
 using WebAPITest.Models.DTO;
 using WebAPITest.Models.TMDB;
+using WebAPITest.Services.UserService;
 using WebAPITest.TmdbImports;
 
 namespace WebAPITest.Controllers;
@@ -14,13 +16,15 @@ public class MoviesController : ControllerBase
 {
     private readonly FilmplattformContext _db;
     private readonly IHttpClientFactory _clientFactory;
+    private readonly IUserService _userService;
     private readonly string _apiKey;
     private readonly MovieImporter _movieImporter;
 
-    public MoviesController(FilmplattformContext db, IHttpClientFactory clientFactory, IConfiguration configuration)
+    public MoviesController(FilmplattformContext db, IHttpClientFactory clientFactory, IConfiguration configuration, IUserService userService)
     {
         _db = db;
         _clientFactory = clientFactory;
+        _userService = userService;
         _apiKey = configuration.GetValue<string>("TmdbApiKey");
         _movieImporter = new MovieImporter(clientFactory, configuration, db);
     }
@@ -28,10 +32,14 @@ public class MoviesController : ControllerBase
     [HttpGet("SearchMovies/{searchString}")]
     public async Task<ActionResult<TMDBMovieSearchResult>> SearchMovies(string searchString)
     {
+        var userName = User?.Identity?.Name;
+        
+        Console.WriteLine(userName);
+        
         searchString = Regex.Replace(searchString, @"\s+", "+");
         var url = $"search/movie?api_key={_apiKey}&query={searchString}";
         
-        TMDBMovieSearchResult? tmdbSearcher = null;
+        TMDBMovieSearchResult? tmdbSearcher;
         var client = _clientFactory.CreateClient("tmdb");
         
         try
@@ -47,7 +55,7 @@ public class MoviesController : ControllerBase
         {
             return NotFound();
         }
-
+        
         return tmdbSearcher;
     }
 

@@ -11,14 +11,20 @@ public class TMDBMovieDetails
     public int Id { get; set; }
     
     [JsonPropertyName("original_title")]
-    public string? Title { get; set; }
+    public string Title { get; set; } = string.Empty;
     
     [JsonPropertyName("overview")]
-    public string? LongDescription { get; set; }
+    public string LongDescription { get; set; } = string.Empty;
     
     [JsonPropertyName("release_date")]
-    public string? ReleaseDate { get; set; }
+    public string ReleaseDate { get; set; } = string.Empty;
     
     [JsonPropertyName("tagline")]
-    public string? ShortDescription { get; set; }
+    public string ShortDescription { get; set; } = string.Empty;
+
+    [JsonPropertyName("backdrop_path")]
+    public string BackdropPath { get; set; } = string.Empty;
+    
+    [JsonPropertyName("poster_path")]
+    public string PosterPath { get; set; } = string.Empty;
 }

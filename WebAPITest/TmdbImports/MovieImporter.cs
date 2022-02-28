@@ -42,6 +42,8 @@ public class MovieImporter
             ShortDescription = tmdbMovie.ShortDescription,
             LongDescription = tmdbMovie.LongDescription,
             ReleaseDate = DateTime.Parse(tmdbMovie.ReleaseDate ?? DateTime.Now.ToString(CultureInfo.InvariantCulture)),
+            PosterUrl = tmdbMovie.PosterPath,
+            BackdropUrl = tmdbMovie.BackdropPath
         };
 
         AddGenresToMovie(genres, film);
