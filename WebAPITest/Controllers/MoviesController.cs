@@ -32,7 +32,7 @@ public class MoviesController : ControllerBase
         _movieImporter = new MovieImporter(clientFactory, configuration, db);
     }
     
-    [HttpGet("SearchMovies/{searchString}")]
+    [HttpGet("SearchMovies/{searchString}"), Authorize]
     public async Task<ActionResult<TMDBMovieSearchResult>> SearchMovies(string searchString)
     {
         Console.WriteLine(_userService.GetId());
@@ -60,7 +60,7 @@ public class MoviesController : ControllerBase
         return tmdbSearcher;
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("GetMovieDetails/{id}")]
     public async Task<ActionResult<DtoMovie>> GetMovie(int id)
     {
         if (!MovieExistsOnDb(id))
@@ -77,6 +77,85 @@ public class MoviesController : ControllerBase
             return NotFound();
 
         return Ok(movie);
+    }
+    
+    [HttpGet("GetPersonalMovieDetails/{id}"), Authorize]
+    public async Task<ActionResult<DtoMovie>> GetMoviePersonal(int id)
+    {
+        if (!MovieExistsOnDb(id))
+        {
+            return NotFound();
+        }
+
+        var movie = _dtoMovieFactory.GetDtoMoviePersonal(id);
+
+        if (movie is null)
+            return NotFound();
+
+        return Ok(movie);
+    }
+    
+    [HttpPatch("PatchLike/{movieId}"), Authorize]
+    public async Task<ActionResult> PatchMovieLike(int movieId, bool like)
+    {
+        if (!MovieExistsOnDb(movieId))
+            return NotFound();
+
+        var movie = _db.Films.Where(x => x.Id == movieId)
+            .Include(x => x.Filmmembers
+                .Where(t => t.MemberId == _userService.GetId()))
+            .FirstOrDefault();
+
+        if (movie is null)
+            return NotFound();
+
+        if (movie.Filmmembers.Count == 0)
+        {
+            movie.Filmmembers.Add(new Filmmember
+            {
+                Film = movie,
+                MemberId = _userService.GetId(),
+                LikeBool = like
+            });
+        }
+        else
+        {
+            movie.Filmmembers.First().LikeBool = like;
+        }
+
+        await _db.SaveChangesAsync();
+        
+        return Ok();
+    }
+    
+    [HttpPatch("PatchWatchlist/{movieId}"), Authorize]
+    public async Task<ActionResult> PatchMovieWatchlist(int movieId, bool watchlist)
+    {
+        if (!MovieExistsOnDb(movieId))
+            return NotFound();
+
+        var movie = _db.Films.Where(x => x.Id == movieId)
+            .Include(x => x.Filmmembers
+                .Where(t => t.MemberId == _userService.GetId()))
+            .FirstOrDefault();
+
+        if (movie is null)
+            return NotFound();
+
+        if (movie.Filmmembers.Count == 0)
+        {
+            movie.Filmmembers.Add(new Filmmember
+            {
+                Film = movie,
+                MemberId = _userService.GetId(),
+            });
+        }
+
+        movie.Filmmembers.First().WatchlistBool = watchlist;
+        
+        await _db.SaveChangesAsync();
+        
+        return Ok();
     }
 
     private bool MovieExistsOnDb(int id)

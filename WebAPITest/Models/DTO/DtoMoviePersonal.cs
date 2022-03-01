@@ -1,11 +1,9 @@
-﻿using WebAPITest.Models.DB;
-
 namespace WebAPITest.Models.DTO;
 
-public class DtoMoviePersonal : DtoMovie
+public class DtoMoviePersonal
 {
-    public DtoMoviePersonal(Film film) : base(film)
-    {
-        
-    }
+    public bool Like { get; set; }
+    public bool Watchlist { get; set; }
+    public List<DtoList> AvailableLists { get; set; } = new();
+    public List<DtoWatchevent> Watchevents { get; set; } = new();
 }

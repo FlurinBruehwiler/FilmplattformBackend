@@ -31,6 +31,7 @@ builder.Services.AddDbContext<FilmplattformContext>(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<DtoMovieFactory>();
+builder.Services.AddScoped<DtoWatcheventFactory>();
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddSwaggerGen(c =>

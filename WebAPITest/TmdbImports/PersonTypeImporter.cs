@@ -22,6 +22,9 @@ public class PersonTypeImporter
             Name = name
         };
 
+        _db.Persontypes.Add(personType);
+        _db.SaveChanges();
+
         return personType;
     }
 

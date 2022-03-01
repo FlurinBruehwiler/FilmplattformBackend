@@ -9,11 +9,13 @@ public class DtoMovieFactory
 {
     private readonly FilmplattformContext _db;
     private readonly IUserService _userService;
+    private readonly DtoWatcheventFactory _dtoWatcheventFactory;
 
-    public DtoMovieFactory(FilmplattformContext db, IUserService userService)
+    public DtoMovieFactory(FilmplattformContext db, IUserService userService, DtoWatcheventFactory dtoWatcheventFactory)
     {
         _db = db;
         _userService = userService;
+        _dtoWatcheventFactory = dtoWatcheventFactory;
     }
     
     public DtoMovie? GetDtoMovie(int movieId)
@@ -35,5 +37,46 @@ public class DtoMovieFactory
         }
         
         return new DtoMovie(film);
+    }
+    
+    public DtoMoviePersonal? GetDtoMoviePersonal(int movieId)
+    {
+        var user = _db.Members.Where(member => member.Id == _userService.GetId())
+            .Include(member => member.Watchevents
+                .Where(watchEvent => watchEvent.FilmId == movieId))
+            .Include(member => member.Filmmembers
+                .Where(filmMember => filmMember.FilmId == movieId))
+            .Include(member => member.Lists)
+            .FirstOrDefault();
+
+        if (user == null)
+        {
+            return null;
+        }
+
+        var filmMember = user.Filmmembers.FirstOrDefault(filmMember => filmMember.FilmId == movieId);
+        
+        return new DtoMoviePersonal
+        {
+            Like = HasLike(filmMember),
+            Watchlist = HasWatchlist(filmMember),
+            Watchevents = GetWatchEvents(user, movieId)
+        };
+    }
+
+    private List<DtoWatchevent> GetWatchEvents(Member user, int movieId)
+    {
+        return user.Watchevents.Where(x => x.FilmId == movieId)
+            .Select(watchEvent => _dtoWatcheventFactory.GetDtoWatchevent(watchEvent)).ToList();
+    }
+
+    private bool HasWatchlist(Filmmember? movieUser)
+    {
+        return movieUser?.WatchlistBool ?? false;
+    }
+
+    private bool HasLike(Filmmember? movieUser)
+    {
+        return movieUser?.LikeBool ?? false;
     }
 }

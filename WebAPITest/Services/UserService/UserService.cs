@@ -11,11 +11,18 @@ public class UserService : IUserService
         _httpContextAccessor = httpContextAccessor;
     }
     
-    public string GetId()
+    public int GetId()
     {
         if (_httpContextAccessor.HttpContext == null)
-            return string.Empty;
+            return -1;
             
-        return _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var idString = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (int.TryParse(idString, out int id))
+        {
+            return id;
+        }
+
+        return -1;
     }
 }

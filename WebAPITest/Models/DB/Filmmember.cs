@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 #nullable disable
 
@@ -16,5 +17,19 @@ namespace WebAPITest.Models.DB
 
         public virtual Film Film { get; set; }
         public virtual Member Member { get; set; }
+        
+        [NotMapped]
+        public bool LikeBool
+        {
+            get => Like > 0;
+            set => this.Like = (byte)(value ? 1 : 0);
+        }
+        
+        [NotMapped]
+        public bool WatchlistBool
+        {
+            get => Watchlist > 0;
+            set => this.Watchlist = (byte)(value ? 1 : 0);
+        }
     }
 }
