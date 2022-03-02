@@ -24,6 +24,7 @@ namespace WebAPITest.Models.DB
         public virtual DbSet<Following> Followings { get; set; }
         public virtual DbSet<Genre> Genres { get; set; }
         public virtual DbSet<List> Lists { get; set; }
+        public virtual DbSet<Listfilm> Listfilms { get; set; }
         public virtual DbSet<Member> Members { get; set; }
         public virtual DbSet<Memberlikelist> Memberlikelists { get; set; }
         public virtual DbSet<Person> People { get; set; }
@@ -202,31 +203,35 @@ namespace WebAPITest.Models.DB
 
             modelBuilder.Entity<Following>(entity =>
             {
-                entity.HasNoKey();
+                entity.HasKey(e => new { e.FollowerId, e.FollowingId })
+                    .HasName("PRIMARY");
 
                 entity.ToTable("following");
 
                 entity.HasIndex(e => e.FollowerId, "fk_Following_Member1_idx");
 
-                entity.HasIndex(e => e.FollowingId1, "fk_Following_Member2_idx");
+                entity.HasIndex(e => e.FollowingId, "fk_Following_Member2_idx");
+
+                entity.HasIndex(e => new { e.FollowerId, e.FollowingId }, "followerUnique")
+                    .IsUnique();
 
                 entity.Property(e => e.FollowerId)
                     .HasColumnType("int(11)")
                     .HasColumnName("Follower_Id");
 
-                entity.Property(e => e.FollowingId1)
+                entity.Property(e => e.FollowingId)
                     .HasColumnType("int(11)")
-                    .HasColumnName("Following_Id1");
+                    .HasColumnName("Following_Id");
 
                 entity.HasOne(d => d.Follower)
-                    .WithMany()
+                    .WithMany(p => p.FollowingFollowers)
                     .HasForeignKey(d => d.FollowerId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("fk_Following_Member1");
 
-                entity.HasOne(d => d.FollowingId1Navigation)
-                    .WithMany()
-                    .HasForeignKey(d => d.FollowingId1)
+                entity.HasOne(d => d.FollowingNavigation)
+                    .WithMany(p => p.FollowingFollowingNavigations)
+                    .HasForeignKey(d => d.FollowingId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("fk_Following_Member2");
             });
@@ -271,6 +276,41 @@ namespace WebAPITest.Models.DB
                     .HasConstraintName("fk_List_Member1");
             });
 
+            modelBuilder.Entity<Listfilm>(entity =>
+            {
+                entity.HasKey(e => new { e.FilmId, e.ListId })
+                    .HasName("PRIMARY");
+
+                entity.ToTable("listfilm");
+
+                entity.HasIndex(e => e.FilmId, "fk_Film_has_List_Film1_idx");
+
+                entity.HasIndex(e => e.ListId, "fk_Film_has_List_List1_idx");
+
+                entity.HasIndex(e => new { e.FilmId, e.ListId }, "unique")
+                    .IsUnique();
+
+                entity.Property(e => e.FilmId)
+                    .HasColumnType("int(11)")
+                    .HasColumnName("Film_Id");
+
+                entity.Property(e => e.ListId)
+                    .HasColumnType("int(11)")
+                    .HasColumnName("List_Id");
+
+                entity.HasOne(d => d.Film)
+                    .WithMany(p => p.Listfilms)
+                    .HasForeignKey(d => d.FilmId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("fk_Film_has_List_Film1");
+
+                entity.HasOne(d => d.List)
+                    .WithMany(p => p.Listfilms)
+                    .HasForeignKey(d => d.ListId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("fk_Film_has_List_List1");
+            });
+
             modelBuilder.Entity<Member>(entity =>
             {
                 entity.ToTable("member");
@@ -279,10 +319,6 @@ namespace WebAPITest.Models.DB
                     .IsUnique();
 
                 entity.Property(e => e.Id).HasColumnType("int(11)");
-
-                entity.Property(e => e.Bio)
-                    .HasMaxLength(45)
-                    .HasDefaultValueSql("'NULL'");
 
                 entity.Property(e => e.Email)
                     .IsRequired()

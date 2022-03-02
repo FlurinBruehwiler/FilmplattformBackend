@@ -25,21 +25,21 @@ public class AuthController : ControllerBase
     }
     
     [HttpPost("register")]
-    public async Task<ActionResult<Member>> Register(DtoUser request)
+    public async Task<ActionResult<Member>> Register(DtoUser user)
     {
-        CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
+        CreatePasswordHash(user.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
-        if (_db.Members.Any(x => x.Username == request.Username))
+        if (_db.Members.Any(x => x.Username == user.Username))
             return BadRequest("User with this Username already Exists");
         
         _db.Members.Add(new Member
         {
-            Username = request.Username,
+            Username = user.Username,
             PasswordHash = passwordHash,
             PasswordSalt = passwordSalt,
-            Email = "",
-            Vorname = "",
-            Name = ""
+            Email = user.Email,
+            Vorname = user.Vorname,
+            Name = user.Name
         });
         await _db.SaveChangesAsync();
 

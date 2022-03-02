@@ -1,4 +1,5 @@
-﻿using WebAPITest.Models.DB;
+﻿using K4os.Compression.LZ4.Internal;
+using WebAPITest.Models.DB;
 using WebAPITest.Models.DTO;
 using Microsoft.EntityFrameworkCore;
 using WebAPITest.Services.UserService;
@@ -27,6 +28,7 @@ public class DtoMovieFactory
             .ThenInclude(t => t.Person)
             .Include(movie => movie.Filmpeople)
             .ThenInclude(t => t.PersonType)
+            .Include(t => t.Watchevents)
             .FirstOrDefault();
         
         Console.WriteLine($"The User Id is {_userService.GetId()}");
@@ -35,8 +37,22 @@ public class DtoMovieFactory
         {
             return null;
         }
+
+        var dtoMovie = new DtoMovie
+        {
+            Id = film.Id,
+            Title = film.Title,
+            ShortDescription = film.ShortDescription,
+            LongDescription = film.LongDescription,
+            PosterURL = film.PosterUrl,
+            BackdropURL = film.BackdropUrl,
+            ReleaseDate = film.ReleaseDate,
+            Genres = film.Filmgenres.Select(x => new DtoGenre(x.Genre)).ToList(),
+            People = film.Filmpeople.Select(x => new DtoPerson(x)).ToList(),
+            AverageRating = film.Watchevents.Where(x => x.Rating is not null).Select(x => x.Rating).Sum() ?? 0
+        };
         
-        return new DtoMovie(film);
+        return dtoMovie;
     }
     
     public DtoMoviePersonal? GetDtoMoviePersonal(int movieId)
@@ -47,6 +63,7 @@ public class DtoMovieFactory
             .Include(member => member.Filmmembers
                 .Where(filmMember => filmMember.FilmId == movieId))
             .Include(member => member.Lists)
+            .ThenInclude(list => list.Listfilms)
             .FirstOrDefault();
 
         if (user == null)
@@ -60,8 +77,15 @@ public class DtoMovieFactory
         {
             Like = HasLike(filmMember),
             Watchlist = HasWatchlist(filmMember),
-            Watchevents = GetWatchEvents(user, movieId)
+            Watchevents = GetWatchEvents(user, movieId),
+            AvailableLists = GetAvailableLists(user, movieId)
         };
+    }
+
+    private List<DtoList> GetAvailableLists(Member user, int movieId)
+    {
+        return user.Lists.Where(list => list.Listfilms.All(x => x.FilmId != movieId))
+            .Select(list => new DtoList {Id = list.Id, Name = list.Name}).ToList();
     }
 
     private List<DtoWatchevent> GetWatchEvents(Member user, int movieId)

@@ -6,20 +6,26 @@ namespace WebAPITest.Factories;
 
 public class WatcheventFactory
 {
-    private readonly UserService _userService;
+    private readonly IUserService _userService;
+    private readonly FilmplattformContext _db;
 
-    public WatcheventFactory(UserService userService)
+    public WatcheventFactory(IUserService userService, FilmplattformContext db)
     {
         _userService = userService;
+        _db = db;
     }
     
     public DtoWatchevent CreateDtoWatchevent(Watchevent watchevent)
     {
+        var user = _db.Members.FirstOrDefault(x => x.Id == watchevent.MemberId);
+        
         var dtoWatchevent = new DtoWatchevent
         {
+            Id = watchevent.Id,
             Rating = watchevent.Rating,
             WatchDate = watchevent.Date,
             CreatorId = watchevent.MemberId,
+            CreatorName = $"{user?.Vorname ?? string.Empty} {user?.Name ?? string.Empty}",
             FilmId = watchevent.FilmId,
             Text = watchevent.Text
         };
@@ -27,7 +33,7 @@ public class WatcheventFactory
         return dtoWatchevent;
     }
     
-    public Watchevent CreateWatchevent(DtoWatchevent dtoWatchevent)
+    public Watchevent CreateWatchevent(DtoPostWatchevent dtoWatchevent)
     {
         var watchevent = new Watchevent
         {

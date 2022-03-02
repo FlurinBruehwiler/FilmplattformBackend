@@ -10,6 +10,8 @@ namespace WebAPITest.Models.DB
         public Member()
         {
             Filmmembers = new HashSet<Filmmember>();
+            FollowingFollowers = new HashSet<Following>();
+            FollowingFollowingNavigations = new HashSet<Following>();
             Lists = new HashSet<List>();
             Memberlikelists = new HashSet<Memberlikelist>();
             Watchevents = new HashSet<Watchevent>();
@@ -20,11 +22,12 @@ namespace WebAPITest.Models.DB
         public string Name { get; set; }
         public string Vorname { get; set; }
         public string Email { get; set; }
-        public string Bio { get; set; }
         public byte[] PasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }
 
         public virtual ICollection<Filmmember> Filmmembers { get; set; }
+        public virtual ICollection<Following> FollowingFollowers { get; set; }
+        public virtual ICollection<Following> FollowingFollowingNavigations { get; set; }
         public virtual ICollection<List> Lists { get; set; }
         public virtual ICollection<Memberlikelist> Memberlikelists { get; set; }
         public virtual ICollection<Watchevent> Watchevents { get; set; }

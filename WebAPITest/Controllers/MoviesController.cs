@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using WebAPITest.Extensions;
+using WebAPITest.Actions;
 using WebAPITest.Factories;
 using WebAPITest.Models.DB;
 using WebAPITest.Models.DTO;
@@ -121,7 +121,7 @@ public class MoviesController : ControllerBase
     }
     
     [HttpPost("Watchevent"), Authorize]
-    public async Task<ActionResult> PostWatchevent(DtoWatchevent dtoWatchevent)
+    public async Task<ActionResult> PostWatchevent(DtoPostWatchevent dtoWatchevent)
     {
         var watchevent = _watcheventFactory.CreateWatchevent(dtoWatchevent);
 

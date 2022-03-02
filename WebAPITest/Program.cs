@@ -5,7 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 using WebAPITest;
-using WebAPITest.Extensions;
+using WebAPITest.Actions;
 using WebAPITest.Factories;
 using WebAPITest.Models.DB;
 using WebAPITest.Services.UserService;

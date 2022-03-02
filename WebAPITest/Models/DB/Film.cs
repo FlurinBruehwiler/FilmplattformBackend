@@ -12,6 +12,7 @@ namespace WebAPITest.Models.DB
             Filmgenres = new HashSet<Filmgenre>();
             Filmmembers = new HashSet<Filmmember>();
             Filmpeople = new HashSet<Filmperson>();
+            Listfilms = new HashSet<Listfilm>();
             Watchevents = new HashSet<Watchevent>();
         }
 
@@ -26,6 +27,7 @@ namespace WebAPITest.Models.DB
         public virtual ICollection<Filmgenre> Filmgenres { get; set; }
         public virtual ICollection<Filmmember> Filmmembers { get; set; }
         public virtual ICollection<Filmperson> Filmpeople { get; set; }
+        public virtual ICollection<Listfilm> Listfilms { get; set; }
         public virtual ICollection<Watchevent> Watchevents { get; set; }
     }
 }

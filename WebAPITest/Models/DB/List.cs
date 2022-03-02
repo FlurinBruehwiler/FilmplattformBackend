@@ -9,6 +9,7 @@ namespace WebAPITest.Models.DB
     {
         public List()
         {
+            Listfilms = new HashSet<Listfilm>();
             Memberlikelists = new HashSet<Memberlikelist>();
         }
 
@@ -17,6 +18,7 @@ namespace WebAPITest.Models.DB
         public int MemberId { get; set; }
 
         public virtual Member Member { get; set; }
+        public virtual ICollection<Listfilm> Listfilms { get; set; }
         public virtual ICollection<Memberlikelist> Memberlikelists { get; set; }
     }
 }
