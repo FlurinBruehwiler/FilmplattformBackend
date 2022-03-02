@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 using WebAPITest;
+using WebAPITest.Extensions;
 using WebAPITest.Factories;
 using WebAPITest.Models.DB;
 using WebAPITest.Services.UserService;
@@ -30,8 +31,9 @@ builder.Services.AddDbContext<FilmplattformContext>(options =>
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<MovieActions>();
 builder.Services.AddScoped<DtoMovieFactory>();
-builder.Services.AddScoped<DtoWatcheventFactory>();
+builder.Services.AddScoped<WatcheventFactory>();
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddSwaggerGen(c =>

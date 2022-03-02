@@ -9,13 +9,13 @@ public class DtoMovieFactory
 {
     private readonly FilmplattformContext _db;
     private readonly IUserService _userService;
-    private readonly DtoWatcheventFactory _dtoWatcheventFactory;
+    private readonly WatcheventFactory _watcheventFactory;
 
-    public DtoMovieFactory(FilmplattformContext db, IUserService userService, DtoWatcheventFactory dtoWatcheventFactory)
+    public DtoMovieFactory(FilmplattformContext db, IUserService userService, WatcheventFactory watcheventFactory)
     {
         _db = db;
         _userService = userService;
-        _dtoWatcheventFactory = dtoWatcheventFactory;
+        _watcheventFactory = watcheventFactory;
     }
     
     public DtoMovie? GetDtoMovie(int movieId)
@@ -67,7 +67,7 @@ public class DtoMovieFactory
     private List<DtoWatchevent> GetWatchEvents(Member user, int movieId)
     {
         return user.Watchevents.Where(x => x.FilmId == movieId)
-            .Select(watchEvent => _dtoWatcheventFactory.GetDtoWatchevent(watchEvent)).ToList();
+            .Select(watchEvent => _watcheventFactory.CreateDtoWatchevent(watchEvent)).ToList();
     }
 
     private bool HasWatchlist(Filmmember? movieUser)

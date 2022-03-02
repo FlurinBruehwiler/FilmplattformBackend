@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using WebAPITest.Extensions;
 using WebAPITest.Factories;
 using WebAPITest.Models.DB;
 using WebAPITest.Models.DTO;
@@ -19,15 +20,21 @@ public class MoviesController : ControllerBase
     private readonly IHttpClientFactory _clientFactory;
     private readonly IUserService _userService;
     private readonly DtoMovieFactory _dtoMovieFactory;
+    private readonly MovieActions _movieActions;
+    private readonly WatcheventFactory _watcheventFactory;
     private readonly string _apiKey;
     private readonly MovieImporter _movieImporter;
 
-    public MoviesController(FilmplattformContext db, IHttpClientFactory clientFactory, IConfiguration configuration, IUserService userService, DtoMovieFactory dtoMovieFactory)
+    public MoviesController(FilmplattformContext db, IHttpClientFactory clientFactory, 
+        IConfiguration configuration, IUserService userService, DtoMovieFactory dtoMovieFactory,
+        MovieActions movieActions, WatcheventFactory watcheventFactory)
     {
         _db = db;
         _clientFactory = clientFactory;
         _userService = userService;
         _dtoMovieFactory = dtoMovieFactory;
+        _movieActions = movieActions;
+        _watcheventFactory = watcheventFactory;
         _apiKey = configuration.GetValue<string>("TmdbApiKey");
         _movieImporter = new MovieImporter(clientFactory, configuration, db);
     }
@@ -98,64 +105,36 @@ public class MoviesController : ControllerBase
     [HttpPatch("PatchLike/{movieId}"), Authorize]
     public async Task<ActionResult> PatchMovieLike(int movieId, bool like)
     {
-        if (!MovieExistsOnDb(movieId))
+        if (!await _movieActions.Like(movieId, like))
             return NotFound();
 
-        var movie = _db.Films.Where(x => x.Id == movieId)
-            .Include(x => x.Filmmembers
-                .Where(t => t.MemberId == _userService.GetId()))
-            .FirstOrDefault();
-
-        if (movie is null)
-            return NotFound();
-
-        if (movie.Filmmembers.Count == 0)
-        {
-            movie.Filmmembers.Add(new Filmmember
-            {
-                Film = movie,
-                MemberId = _userService.GetId(),
-                LikeBool = like
-            });
-        }
-        else
-        {
-            movie.Filmmembers.First().LikeBool = like;
-        }
-
-        await _db.SaveChangesAsync();
-        
         return Ok();
     }
     
     [HttpPatch("PatchWatchlist/{movieId}"), Authorize]
     public async Task<ActionResult> PatchMovieWatchlist(int movieId, bool watchlist)
     {
-        if (!MovieExistsOnDb(movieId))
+        if (!await _movieActions.Watchlist(movieId, watchlist))
             return NotFound();
+        
+        return Ok();
+    }
+    
+    [HttpPost("Watchevent"), Authorize]
+    public async Task<ActionResult> PostWatchevent(DtoWatchevent dtoWatchevent)
+    {
+        var watchevent = _watcheventFactory.CreateWatchevent(dtoWatchevent);
 
-        var movie = _db.Films.Where(x => x.Id == movieId)
-            .Include(x => x.Filmmembers
-                .Where(t => t.MemberId == _userService.GetId()))
-            .FirstOrDefault();
+        var movie = await _db.Films.FirstOrDefaultAsync(x => x.Id == dtoWatchevent.FilmId);
 
         if (movie is null)
             return NotFound();
-
-        if (movie.Filmmembers.Count == 0)
-        {
-            movie.Filmmembers.Add(new Filmmember
-            {
-                Film = movie,
-                MemberId = _userService.GetId(),
-            });
-        }
-
-        movie.Filmmembers.First().WatchlistBool = watchlist;
         
+        movie.Watchevents.Add(watchevent);
+
         await _db.SaveChangesAsync();
         
-        return Ok();
+        return Ok(watchevent.Id);
     }
 
     private bool MovieExistsOnDb(int id)
