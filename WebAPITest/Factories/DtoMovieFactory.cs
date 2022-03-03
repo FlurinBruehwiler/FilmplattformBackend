@@ -64,6 +64,9 @@ public class DtoMovieFactory
                 .Where(filmMember => filmMember.FilmId == movieId))
             .Include(member => member.Lists)
             .ThenInclude(list => list.Listfilms)
+            .Include(x => x.FollowingFollowingNavigations)
+            .ThenInclude(x => x.Follower)
+            .ThenInclude(x => x.Watchevents)
             .FirstOrDefault();
 
         if (user == null)
@@ -90,8 +93,11 @@ public class DtoMovieFactory
 
     private List<DtoWatchevent> GetWatchEvents(Member user, int movieId)
     {
-        return user.Watchevents.Where(x => x.FilmId == movieId)
-            .Select(watchEvent => _watcheventFactory.CreateDtoWatchevent(watchEvent)).ToList();
+        return user.FollowingFollowingNavigations.SelectMany(x => x.Follower.Watchevents
+                .Where(f => f.FilmId == movieId))
+            .Select(watchEvent => _watcheventFactory.CreateDtoWatchevent(watchEvent))
+            .Concat(user.Watchevents.Where(x => x.FilmId == movieId)
+                .Select(watchEvent => _watcheventFactory.CreateDtoWatchevent(watchEvent))).ToList();
     }
 
     private bool HasWatchlist(Filmmember? movieUser)

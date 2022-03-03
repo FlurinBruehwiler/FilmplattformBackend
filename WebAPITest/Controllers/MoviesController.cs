@@ -38,34 +38,6 @@ public class MoviesController : ControllerBase
         _apiKey = configuration.GetValue<string>("TmdbApiKey");
         _movieImporter = new MovieImporter(clientFactory, configuration, db);
     }
-    
-    [HttpGet("SearchMovies/{searchString}"), Authorize]
-    public async Task<ActionResult<TMDBMovieSearchResult>> SearchMovies(string searchString)
-    {
-        Console.WriteLine(_userService.GetId());
-        
-        searchString = Regex.Replace(searchString, @"\s+", "+");
-        var url = $"search/movie?api_key={_apiKey}&query={searchString}";
-        
-        TMDBMovieSearchResult? tmdbSearcher;
-        var client = _clientFactory.CreateClient("tmdb");
-        
-        try
-        {
-            tmdbSearcher = await client.GetFromJsonAsync<TMDBMovieSearchResult>(url);
-            
-            if (tmdbSearcher == null)
-            {
-                throw new Exception();
-            }
-        }
-        catch (Exception)
-        {
-            return NotFound();
-        }
-        
-        return tmdbSearcher;
-    }
 
     [HttpGet("GetMovieDetails/{id}")]
     public async Task<ActionResult<DtoMovie>> GetMovie(int id)

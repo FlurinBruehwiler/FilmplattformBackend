@@ -1,14 +1,17 @@
 ﻿using System.Security.Claims;
+using WebAPITest.Models.DB;
 
 namespace WebAPITest.Services.UserService;
 
 public class UserService : IUserService
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly FilmplattformContext _db;
 
-    public UserService(IHttpContextAccessor httpContextAccessor)
+    public UserService(IHttpContextAccessor httpContextAccessor, FilmplattformContext db)
     {
         _httpContextAccessor = httpContextAccessor;
+        _db = db;
     }
     
     public int GetId()
@@ -24,5 +27,15 @@ public class UserService : IUserService
         }
 
         return -1;
+    }
+
+    public Member GetUser()
+    {
+        return _db.Members.FirstOrDefault(x => x.Id == GetId()) ?? new Member();
+    }
+
+    public Member? GetUserById(int id)
+    {
+        return _db.Members.FirstOrDefault(x => x.Id == id);
     }
 }
