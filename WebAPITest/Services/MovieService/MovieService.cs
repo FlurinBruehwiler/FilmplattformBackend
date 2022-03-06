@@ -1,21 +1,21 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using WebAPITest.Models.DB;
 using WebAPITest.Services.UserService;
 
-namespace WebAPITest.Actions;
+namespace WebAPITest.Services.MovieService;
 
-public class MovieActions
+public class MovieService : IMovieService
 {
     private readonly FilmplattformContext _db;
     private readonly IUserService _userService;
 
-    public MovieActions(FilmplattformContext db, IUserService userService)
+    public MovieService(FilmplattformContext db, IUserService userService)
     {
         _db = db;
         _userService = userService;
     }
     
-    public async Task<bool> Like(int movieId, bool like)
+    public async Task<bool> PatchLike(int movieId, bool like)
     {
         var movie = GetMovieWithFilmMember(movieId);
 
@@ -29,7 +29,7 @@ public class MovieActions
         return true;
     }
 
-    public async Task<bool> Watchlist(int movieId, bool watchlist)
+    public async Task<bool> PatchWatchlist(int movieId, bool watchlist)
     {
         var movie = GetMovieWithFilmMember(movieId);
 
@@ -43,11 +43,22 @@ public class MovieActions
         return true;
     }
 
-    public void CreateWatchEvent(int movieId)
+    public Film? GetMovieById(int id)
     {
-        
+        return _db.Films.FirstOrDefault(x => x.Id == id);
     }
-    
+
+    public string? GetDirector(int id)
+    {
+        var movie = _db.Films.Where(x => x.Id == id)
+            .Include(x => x.Filmpeople)
+            .ThenInclude(x => x.PersonType)
+            .Include(x => x.Filmpeople)
+            .ThenInclude(x => x.Person).FirstOrDefault();
+
+        return movie?.Filmpeople.FirstOrDefault(x => x.PersonType.Name == "Directing")?.Person.Name;
+    }
+
     private Film? GetMovieWithFilmMember(int movieId)
     {
         var movie = _db.Films.Where(x => x.Id == movieId)

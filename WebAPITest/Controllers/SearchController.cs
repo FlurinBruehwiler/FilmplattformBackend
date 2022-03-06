@@ -1,25 +1,23 @@
 ﻿using System.Text.RegularExpressions;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebAPITest.Models.TMDB;
-using WebAPITest.Services.UserService;
 
 namespace WebAPITest.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class Search : ControllerBase
+public class SearchController : ControllerBase
 {
     private readonly IHttpClientFactory _clientFactory;
     private readonly string _apiKey;
     
-    public Search(IConfiguration configuration, IHttpClientFactory clientFactory)
+    public SearchController(IConfiguration configuration, IHttpClientFactory clientFactory)
     {
         _clientFactory = clientFactory;
         _apiKey = configuration.GetValue<string>("TmdbApiKey");
     }
     
-    [HttpGet("SearchMovies/{searchString}"), Authorize]
+    [HttpGet("SearchMovies/{searchString}")]
     public async Task<ActionResult<TMDBMovieSearchResult>> SearchMovies(string searchString)
     {
         searchString = Regex.Replace(searchString, @"\s+", "+");

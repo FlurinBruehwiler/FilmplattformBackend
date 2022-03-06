@@ -1,13 +1,12 @@
-using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
-using WebAPITest;
-using WebAPITest.Actions;
 using WebAPITest.Factories;
 using WebAPITest.Models.DB;
+using WebAPITest.Services.MovieService;
+using WebAPITest.Services.PersonService;
 using WebAPITest.Services.UserService;
 using static System.Text.Encoding;
 
@@ -31,7 +30,8 @@ builder.Services.AddDbContext<FilmplattformContext>(options =>
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<MovieActions>();
+builder.Services.AddScoped<IMovieService, MovieService>();
+builder.Services.AddScoped<IPersonService, PersonService>();
 builder.Services.AddScoped<DtoMovieFactory>();
 builder.Services.AddScoped<WatcheventFactory>();
 builder.Services.AddHttpContextAccessor();

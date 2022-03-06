@@ -41,7 +41,7 @@ public class PersonImporter
                 };
             }
 
-            var department = tmdbPerson is TMDBCrew crew ? crew.Department : "Actor";
+            var department = tmdbPerson is TmdbMovieCrew crew ? crew.Department : "Actor";
 
             if(department != null)
                 people.Add((person, department));
@@ -50,7 +50,7 @@ public class PersonImporter
         return people;
     }
 
-    private List<TMDBPerson> CombineCrewAndCast(List<TMDBCrew>? crew, List<TMDBCast>? cast)
+    private List<TMDBPerson> CombineCrewAndCast(List<TmdbMovieCrew>? crew, List<TmdbMovieCast>? cast)
     {
         if (cast == null)
             return new List<TMDBPerson>();
@@ -63,22 +63,22 @@ public class PersonImporter
         return tmdbPeople;
     }
     
-    private async Task<TMDBCredits> GetPeopleFromTmdb(int id)
+    private async Task<TmdbMovieCredits> GetPeopleFromTmdb(int id)
     {
         var url = $"movie/{id}/credits?api_key={_apiKey}";
         
-        TMDBCredits? tmdbCredits;
+        TmdbMovieCredits? tmdbCredits;
         var client = _clientFactory.CreateClient("tmdb");
         
         try
         {
-            tmdbCredits = await client.GetFromJsonAsync<TMDBCredits>(url);
+            tmdbCredits = await client.GetFromJsonAsync<TmdbMovieCredits>(url);
             if (tmdbCredits == null)
                 throw new Exception();
         }
         catch (Exception)
         {
-            return new TMDBCredits();
+            return new TmdbMovieCredits();
         }
 
         return tmdbCredits;

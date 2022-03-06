@@ -17,7 +17,7 @@ public class WatcheventFactory
     
     public DtoWatchevent CreateDtoWatchevent(Watchevent watchevent)
     {
-        var user = _db.Members.FirstOrDefault(x => x.Id == watchevent.MemberId);
+        var user = _userService.GetUserById(watchevent.MemberId);
         
         var dtoWatchevent = new DtoWatchevent
         {

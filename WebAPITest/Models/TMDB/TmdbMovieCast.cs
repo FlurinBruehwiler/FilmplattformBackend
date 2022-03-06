@@ -2,6 +2,6 @@
 
 namespace WebAPITest.Models.TMDB;
 
-public class TMDBCast : TMDBPerson
+public class TmdbMovieCast : TMDBPerson
 {
 }

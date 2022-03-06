@@ -2,7 +2,7 @@
 
 namespace WebAPITest.Models.TMDB;
 
-public class TMDBCrew : TMDBPerson
+public class TmdbMovieCrew : TMDBPerson
 {
     [JsonPropertyName("department")]
     public string? Department { get; set; }
