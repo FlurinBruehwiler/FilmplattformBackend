@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebAPITest.Models.DB;
-using WebAPITest.Services.UserService;
+using WebAPITest.Services;
 
 namespace WebAPITest.Controllers;
 
@@ -10,9 +10,9 @@ namespace WebAPITest.Controllers;
 public class FollowingController : ControllerBase
 {
     private readonly FilmplattformContext _db;
-    private readonly IUserService _userService;
+    private readonly UserService _userService;
 
-    public FollowingController(FilmplattformContext db, IUserService userService)
+    public FollowingController(FilmplattformContext db, UserService userService)
     {
         _db = db;
         _userService = userService;

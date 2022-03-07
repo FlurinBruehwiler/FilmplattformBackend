@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using WebAPITest.Factories;
 using WebAPITest.Models.DB;
 using WebAPITest.Models.DTO;
-using WebAPITest.Services.MovieService;
+using WebAPITest.Services;
 using WebAPITest.TmdbImports;
 
 namespace WebAPITest.Controllers;
@@ -15,11 +15,11 @@ public class MoviesController : ControllerBase
 {
     private readonly FilmplattformContext _db;
     private readonly DtoMovieFactory _dtoMovieFactory;
-    private readonly IMovieService _movieService;
+    private readonly MovieService _movieService;
     private readonly MovieImporter _movieImporter;
 
     public MoviesController(FilmplattformContext db, IHttpClientFactory clientFactory, 
-        IConfiguration configuration, DtoMovieFactory dtoMovieFactory, IMovieService movieService)
+        IConfiguration configuration, DtoMovieFactory dtoMovieFactory, MovieService movieService)
     {
         _db = db;
         _dtoMovieFactory = dtoMovieFactory;

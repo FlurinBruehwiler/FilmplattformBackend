@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WebAPITest.Models.DTO;
 using WebAPITest.Models.TMDB;
-using WebAPITest.Services.PersonService;
+using WebAPITest.Services;
 
 namespace WebAPITest.Controllers;
 
@@ -10,11 +10,11 @@ namespace WebAPITest.Controllers;
 public class PersonController : ControllerBase
 {
     private readonly IHttpClientFactory _clientFactory;
-    private readonly IPersonService _personService;
+    private readonly PersonService _personService;
     private readonly string _apiKey;
     
     public PersonController(IConfiguration configuration, IHttpClientFactory clientFactory,
-        IPersonService personService)
+        PersonService personService)
     {
         _clientFactory = clientFactory;
         _personService = personService;

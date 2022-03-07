@@ -1,15 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WebAPITest.Models.DB;
-using WebAPITest.Services.UserService;
 
-namespace WebAPITest.Services.MovieService;
+namespace WebAPITest.Services;
 
-public class MovieService : IMovieService
+public class MovieService
 {
     private readonly FilmplattformContext _db;
-    private readonly IUserService _userService;
+    private readonly UserService _userService;
 
-    public MovieService(FilmplattformContext db, IUserService userService)
+    public MovieService(FilmplattformContext db, UserService userService)
     {
         _db = db;
         _userService = userService;

@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using WebAPITest.Factories;
 using WebAPITest.Models.DB;
 using WebAPITest.Models.DTO;
-using WebAPITest.Services.MovieService;
+using WebAPITest.Services;
 
 namespace WebAPITest.Controllers;
 
@@ -14,9 +14,9 @@ public class WatcheventController : ControllerBase
 {
     private readonly WatcheventFactory _watcheventFactory;
     private readonly FilmplattformContext _db;
-    private readonly IMovieService _movieService;
+    private readonly MovieService _movieService;
 
-    public WatcheventController(WatcheventFactory watcheventFactory, FilmplattformContext db, IMovieService movieService)
+    public WatcheventController(WatcheventFactory watcheventFactory, FilmplattformContext db, MovieService movieService)
     {
         _watcheventFactory = watcheventFactory;
         _db = db;

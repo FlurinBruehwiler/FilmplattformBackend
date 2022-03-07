@@ -2,17 +2,17 @@
 using WebAPITest.Models.DB;
 using WebAPITest.Models.DTO;
 using Microsoft.EntityFrameworkCore;
-using WebAPITest.Services.UserService;
+using WebAPITest.Services;
 
 namespace WebAPITest.Factories;
 
 public class DtoMovieFactory
 {
     private readonly FilmplattformContext _db;
-    private readonly IUserService _userService;
+    private readonly UserService _userService;
     private readonly WatcheventFactory _watcheventFactory;
 
-    public DtoMovieFactory(FilmplattformContext db, IUserService userService, WatcheventFactory watcheventFactory)
+    public DtoMovieFactory(FilmplattformContext db, UserService userService, WatcheventFactory watcheventFactory)
     {
         _db = db;
         _userService = userService;

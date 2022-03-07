@@ -5,9 +5,7 @@ using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 using WebAPITest.Factories;
 using WebAPITest.Models.DB;
-using WebAPITest.Services.MovieService;
-using WebAPITest.Services.PersonService;
-using WebAPITest.Services.UserService;
+using WebAPITest.Services;
 using static System.Text.Encoding;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,9 +27,9 @@ builder.Services.AddDbContext<FilmplattformContext>(options =>
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IMovieService, MovieService>();
-builder.Services.AddScoped<IPersonService, PersonService>();
+builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<MovieService>();
+builder.Services.AddScoped<PersonService>();
 builder.Services.AddScoped<DtoMovieFactory>();
 builder.Services.AddScoped<WatcheventFactory>();
 builder.Services.AddHttpContextAccessor();

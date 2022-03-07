@@ -1,8 +1,8 @@
 ﻿using WebAPITest.Models.DB;
 
-namespace WebAPITest.Services.PersonService;
+namespace WebAPITest.Services;
 
-public class PersonService : IPersonService
+public class PersonService
 {
     private readonly FilmplattformContext _db;
 

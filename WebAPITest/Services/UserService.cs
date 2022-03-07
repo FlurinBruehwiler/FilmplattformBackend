@@ -1,9 +1,9 @@
 ﻿using System.Security.Claims;
 using WebAPITest.Models.DB;
 
-namespace WebAPITest.Services.UserService;
+namespace WebAPITest.Services;
 
-public class UserService : IUserService
+public class UserService
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly FilmplattformContext _db;

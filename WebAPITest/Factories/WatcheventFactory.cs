@@ -1,15 +1,15 @@
 using WebAPITest.Models.DB;
 using WebAPITest.Models.DTO;
-using WebAPITest.Services.UserService;
+using WebAPITest.Services;
 
 namespace WebAPITest.Factories;
 
 public class WatcheventFactory
 {
-    private readonly IUserService _userService;
+    private readonly UserService _userService;
     private readonly FilmplattformContext _db;
 
-    public WatcheventFactory(IUserService userService, FilmplattformContext db)
+    public WatcheventFactory(UserService userService, FilmplattformContext db)
     {
         _userService = userService;
         _db = db;

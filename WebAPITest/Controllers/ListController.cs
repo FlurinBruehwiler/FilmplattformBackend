@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using WebAPITest.Models.DB;
 using WebAPITest.Models.DTO;
-using WebAPITest.Services.UserService;
+using WebAPITest.Services;
 
 namespace WebAPITest.Controllers;
 
@@ -11,9 +11,9 @@ namespace WebAPITest.Controllers;
 public class ListController : ControllerBase
 {
     private readonly FilmplattformContext _db;
-    private readonly IUserService _userService;
+    private readonly UserService _userService;
 
-    public ListController(FilmplattformContext db, IUserService userService)
+    public ListController(FilmplattformContext db, UserService userService)
     {
         _db = db;
         _userService = userService;
