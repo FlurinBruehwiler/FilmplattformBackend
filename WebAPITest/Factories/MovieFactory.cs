@@ -1,42 +1,42 @@
-﻿using System.Configuration;
-using System.Globalization;
+﻿using System.Globalization;
 using Microsoft.EntityFrameworkCore;
 using WebAPITest.Models.DB;
 using WebAPITest.Models.TMDB;
+using WebAPITest.Services;
 
-namespace WebAPITest.TmdbImports;
+namespace WebAPITest.Factories;
 
-public class MovieImporter
+public class MovieFactory
 {
-    private readonly IHttpClientFactory _clientFactory;
     private readonly FilmplattformContext _db;
-    private readonly string _apiKey;
-    private readonly GenreImporter _genreImporter;
-    private readonly PersonImporter _personImporter;
-    private readonly PersonTypeImporter _personTypeImporter;
+    private readonly TmdbService _tmdbService;
+    private readonly PersonFactory _personFactory;
+    private readonly PersonTypeFactory _personTypeFactory;
+    private readonly GenreService _genreService;
 
-    public MovieImporter(IHttpClientFactory clientFactory, IConfiguration configuration, FilmplattformContext db)
+    public MovieFactory(FilmplattformContext db, TmdbService tmdbService, 
+        PersonFactory personFactory, PersonTypeFactory personTypeFactory,
+        GenreService genreService)
     {
-        _clientFactory = clientFactory;
         _db = db;
-        _apiKey = configuration.GetValue<string>("TmdbApiKey");
-        _genreImporter = new GenreImporter(configuration, db);
-        _personImporter = new PersonImporter(clientFactory, configuration, db);
-        _personTypeImporter = new PersonTypeImporter(db);
+        _tmdbService = tmdbService;
+        _personFactory = personFactory;
+        _personTypeFactory = personTypeFactory;
+        _genreService = genreService;
     }
     
-    public async Task<bool> AddMovieToDb(int id)
+    public async Task<bool> CreateMovie(int id)
     {
         if(MovieExists(id))
             return true;
 
-        var tmdbMovie = await GetMovieDetailsFromTmdb(id);
+        var tmdbMovie = await _tmdbService.GetMovieDetails(id);
 
         if (tmdbMovie is null)
             return false;
 
-        var genres = _genreImporter.GetGenresForMovie(tmdbMovie);
-        var people = await _personImporter.GetPeopleForMovie(tmdbMovie);
+        var genres = _genreService.GetGenresForMovie(tmdbMovie);
+        var people = await _personFactory.GetPeopleForMovie(tmdbMovie);
         
         var film = new Film
         {
@@ -59,25 +59,6 @@ public class MovieImporter
         return true;
     }
 
-    private async Task<TMDBMovieDetails?> GetMovieDetailsFromTmdb(int id)
-    {
-        var url = $"movie/{id}?api_key={_apiKey}";
-
-        TMDBMovieDetails? tmdbMovie;
-        var client = _clientFactory.CreateClient("tmdb");
-
-        try
-        {
-            tmdbMovie = await client.GetFromJsonAsync<TMDBMovieDetails>(url);
-        }
-        catch (Exception)
-        {
-            return new TMDBMovieDetails();
-        }
-
-        return tmdbMovie;
-    }
-
     private void AddPersonToMovie(List<(Person Person, string Departement)>? people, Film film)
     {
         if(people == null)
@@ -86,9 +67,11 @@ public class MovieImporter
         foreach (var p in people)
         {
             var person = p.Person;
-            var personType = _personTypeImporter.GetPersonType(p.Departement);
+            var personType = _personTypeFactory.GetPersonType(p.Departement);
 
-            if(film.Filmpeople.Any(f => f.Film.Id == film.Id && f.Person.Id == person.Id && f.PersonType.Id == personType.Id))
+            if(film.Filmpeople.Any(f => f.Film.Id == film.Id &&
+                                        f.Person.Id == person.Id &&
+                                        f.PersonType.Id == personType.Id))
             {
                 return;
             }
@@ -123,11 +106,6 @@ public class MovieImporter
         }
     }
 
-    private bool FilmGenreExists(Film film, Genre genre)
-    {
-        return _db.Filmgenres.AsNoTracking().Any(x => x.FilmId == film.Id && x.GenreId == genre.Id);
-    }
-    
     private bool MovieExists(int id)
     {
         return _db.Films.AsNoTracking().Any(x => x.Id == id);

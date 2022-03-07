@@ -1,17 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using WebAPITest.Models.DB;
+﻿using WebAPITest.Models.DB;
 using WebAPITest.Models.TMDB;
 
-namespace WebAPITest.TmdbImports;
+namespace WebAPITest.Factories;
 
-public class PersonImporter
+public class PersonFactory
 {
     private readonly IHttpClientFactory _clientFactory;
     private readonly FilmplattformContext _db;
     private readonly string _apiKey;
 
-    public PersonImporter(IHttpClientFactory clientFactory, IConfiguration configuration, FilmplattformContext db)
+    public PersonFactory(IHttpClientFactory clientFactory, IConfiguration configuration, FilmplattformContext db)
     {
         _clientFactory = clientFactory;
         _db = db;

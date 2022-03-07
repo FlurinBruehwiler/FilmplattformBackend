@@ -27,11 +27,24 @@ builder.Services.AddDbContext<FilmplattformContext>(options =>
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 
 builder.Services.AddEndpointsApiExplorer();
+
+//Add Services
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<MovieService>();
 builder.Services.AddScoped<PersonService>();
-builder.Services.AddScoped<DtoMovieFactory>();
+builder.Services.AddScoped<GenreService>();
+builder.Services.AddScoped<PersonTypeService>();
+builder.Services.AddScoped<TmdbService>();
+
+//Add Factories
 builder.Services.AddScoped<WatcheventFactory>();
+builder.Services.AddScoped<DtoMovieFactory>();
+builder.Services.AddScoped<GenreFactory>();
+builder.Services.AddScoped<MovieFactory>();
+builder.Services.AddScoped<PersonFactory>();
+builder.Services.AddScoped<PersonTypeFactory>();
+
+
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddSwaggerGen(c =>

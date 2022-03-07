@@ -5,7 +5,6 @@ using WebAPITest.Factories;
 using WebAPITest.Models.DB;
 using WebAPITest.Models.DTO;
 using WebAPITest.Services;
-using WebAPITest.TmdbImports;
 
 namespace WebAPITest.Controllers;
 
@@ -16,15 +15,16 @@ public class MoviesController : ControllerBase
     private readonly FilmplattformContext _db;
     private readonly DtoMovieFactory _dtoMovieFactory;
     private readonly MovieService _movieService;
-    private readonly MovieImporter _movieImporter;
+    private readonly MovieFactory _movieFactory;
 
     public MoviesController(FilmplattformContext db, IHttpClientFactory clientFactory, 
-        IConfiguration configuration, DtoMovieFactory dtoMovieFactory, MovieService movieService)
+        IConfiguration configuration, DtoMovieFactory dtoMovieFactory, MovieService movieService,
+        MovieFactory movieFactory)
     {
         _db = db;
         _dtoMovieFactory = dtoMovieFactory;
         _movieService = movieService;
-        _movieImporter = new MovieImporter(clientFactory, configuration, db);
+        _movieFactory = movieFactory;
     }
 
     [HttpGet("GetMovieDetails/{id}")]
@@ -32,7 +32,7 @@ public class MoviesController : ControllerBase
     {
         if (!MovieExistsOnDb(id))
         {
-            if (!await _movieImporter.AddMovieToDb(id))
+            if (!await _movieFactory.CreateMovie(id))
             {
                 return NotFound();
             }

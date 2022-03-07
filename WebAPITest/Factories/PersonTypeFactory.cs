@@ -1,13 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WebAPITest.Models.DB;
 
-namespace WebAPITest.TmdbImports;
+namespace WebAPITest.Factories;
 
-public class PersonTypeImporter
+public class PersonTypeFactory
 {
     private readonly FilmplattformContext _db;
 
-    public PersonTypeImporter(FilmplattformContext db)
+    public PersonTypeFactory(FilmplattformContext db)
     {
         _db = db;
     }

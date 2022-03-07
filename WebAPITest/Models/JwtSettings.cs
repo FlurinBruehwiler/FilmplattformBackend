@@ -1,4 +1,4 @@
-﻿namespace WebAPITest;
+﻿namespace WebAPITest.Models;
 
 public class JwtSettings
 {

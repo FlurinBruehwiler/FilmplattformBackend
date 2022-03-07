@@ -1,17 +1,19 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using WebAPITest.Factories;
 using WebAPITest.Models.DB;
 using WebAPITest.Models.TMDB;
 
-namespace WebAPITest.TmdbImports;
+namespace WebAPITest.Services;
 
-public class GenreImporter
+public class GenreService
 {
     private readonly FilmplattformContext _db;
+    private readonly GenreFactory _genreFactory;
 
-    public GenreImporter(IConfiguration configuration, FilmplattformContext db)
+    public GenreService(FilmplattformContext db, GenreFactory genreFactory)
     {
         _db = db;
-        configuration.GetValue<string>("TmdbApiKey");
+        _genreFactory = genreFactory;
     }
     
     public List<Genre> GetGenresForMovie(TMDBMovieDetails tmdbMovie)
@@ -30,17 +32,13 @@ public class GenreImporter
 
         return genres;
     }
-
+    
     private Genre GetGenre(TMDBGenre tmdbGenre)
     {
         if (GenreExists(tmdbGenre.Id))
             return _db.Genres.First(x => x.Id == tmdbGenre.Id);
 
-        var genre = new Genre
-        {
-            Id = tmdbGenre.Id,
-            Name = tmdbGenre.Name
-        };
+        var genre = _genreFactory.CreateGenre(tmdbGenre.Id, tmdbGenre.Name);
         
         return genre;
     }
