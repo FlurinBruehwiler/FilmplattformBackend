@@ -31,7 +31,7 @@ public class UserService
 
     public Member GetUser()
     {
-        return _db.Members.FirstOrDefault(x => x.Id == GetId()) ?? new Member();
+        return _db.Members.FirstOrDefault(x => x.Id == GetId()) ?? throw new Exception();
     }
 
     public Member? GetUserById(int id)

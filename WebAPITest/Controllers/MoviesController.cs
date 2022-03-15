@@ -17,9 +17,8 @@ public class MoviesController : ControllerBase
     private readonly MovieService _movieService;
     private readonly MovieFactory _movieFactory;
 
-    public MoviesController(FilmplattformContext db, IHttpClientFactory clientFactory, 
-        IConfiguration configuration, DtoMovieFactory dtoMovieFactory, MovieService movieService,
-        MovieFactory movieFactory)
+    public MoviesController(FilmplattformContext db, DtoMovieFactory dtoMovieFactory
+        , MovieService movieService, MovieFactory movieFactory)
     {
         _db = db;
         _dtoMovieFactory = dtoMovieFactory;

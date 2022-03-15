@@ -1,12 +1,8 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Security.Cryptography;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using WebAPITest.Models.DB;
 using WebAPITest.Models.DTO;
-using static System.Text.Encoding;
+using WebAPITest.Services;
 
 namespace WebAPITest.Controllers;
 
@@ -15,18 +11,18 @@ namespace WebAPITest.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly FilmplattformContext _db;
-    private readonly IConfiguration _configuration;
+    private readonly AuthService _authService;
 
-    public AuthController(FilmplattformContext db, IConfiguration configuration)
+    public AuthController(FilmplattformContext db, AuthService authService)
     {
         _db = db;
-        _configuration = configuration;
+        _authService = authService;
     }
     
     [HttpPost("register")]
-    public async Task<ActionResult<Member>> Register(DtoUser user)
+    public async Task<ActionResult<string>> Register(DtoUser user)
     {
-        CreatePasswordHash(user.Password, out byte[] passwordHash, out byte[] passwordSalt);
+        _authService.CreatePasswordHash(user.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
         if (_db.Members.Any(x => x.Username == user.Username))
             return BadRequest("User with this Username already Exists");
@@ -42,11 +38,16 @@ public class AuthController : ControllerBase
         });
         await _db.SaveChangesAsync();
 
-        return Ok("Benuter Erstellt");
+        var member = _db.Members.FirstOrDefault(x => x.Username == user.Username);
+        
+        if(member != null)
+            return Ok(_authService.CreateToken(member));
+
+        return StatusCode(500);
     }
 
     [HttpPost("login")]
-    public async Task<ActionResult<string>> Login(DtoUser request)
+    public async Task<ActionResult<string>> Login(DtoLogin request)
     {
         var member = _db.Members.AsNoTracking().FirstOrDefault(x => x.Username == request.Username);
         
@@ -55,51 +56,12 @@ public class AuthController : ControllerBase
             return BadRequest("User not found");
         }
         
-        if (!VerifyPasswordHash(request.Password, member.PasswordHash, member.PasswordSalt))
+        if (!_authService.VerifyPasswordHash(request.Password, member.PasswordHash, member.PasswordSalt))
         {
             return BadRequest("Wrong Password");
         }
 
-        var token = CreateToken(member);
+        var token = _authService.CreateToken(member);
         return Ok(token);
-    }
-
-    private string CreateToken(Member member)
-    {
-        List<Claim> claims = new List<Claim>
-        {
-            new(ClaimTypes.NameIdentifier, member.Id.ToString())
-        };
-
-        var key = new SymmetricSecurityKey(UTF8.GetBytes(_configuration.GetSection("JwtSettings:Secret").Value));
-
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
-
-        var token = new JwtSecurityToken(
-            claims: claims,
-            expires: DateTime.Now.AddDays(100),
-            signingCredentials: creds);
-
-        var jwt = new JwtSecurityTokenHandler().WriteToken(token);
-        
-        return jwt;
-    }
-
-    private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
-    {
-        using (var hmac = new HMACSHA512())
-        {
-            passwordSalt = hmac.Key;
-            passwordHash = hmac.ComputeHash(UTF8.GetBytes(password));
-        }
-    }
-
-    private bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
-    {
-        using (var hmac = new HMACSHA512(passwordSalt))
-        {
-            var computedHash = hmac.ComputeHash(UTF8.GetBytes(password));
-            return computedHash.SequenceEqual(passwordHash);
-        }
     }
 }

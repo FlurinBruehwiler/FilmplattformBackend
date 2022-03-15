@@ -35,6 +35,8 @@ builder.Services.AddScoped<PersonService>();
 builder.Services.AddScoped<GenreService>();
 builder.Services.AddScoped<PersonTypeService>();
 builder.Services.AddScoped<TmdbService>();
+builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<FollowService>();
 
 //Add Factories
 builder.Services.AddScoped<WatcheventFactory>();

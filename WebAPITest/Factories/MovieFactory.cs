@@ -10,19 +10,18 @@ public class MovieFactory
 {
     private readonly FilmplattformContext _db;
     private readonly TmdbService _tmdbService;
-    private readonly PersonFactory _personFactory;
-    private readonly PersonTypeFactory _personTypeFactory;
     private readonly GenreService _genreService;
+    private readonly MovieService _movieService;
+    private readonly PersonService _personService;
 
-    public MovieFactory(FilmplattformContext db, TmdbService tmdbService, 
-        PersonFactory personFactory, PersonTypeFactory personTypeFactory,
-        GenreService genreService)
+    public MovieFactory(FilmplattformContext db, TmdbService tmdbService,
+        GenreService genreService, MovieService movieService, PersonService personService)
     {
         _db = db;
         _tmdbService = tmdbService;
-        _personFactory = personFactory;
-        _personTypeFactory = personTypeFactory;
         _genreService = genreService;
+        _movieService = movieService;
+        _personService = personService;
     }
     
     public async Task<bool> CreateMovie(int id)
@@ -36,7 +35,7 @@ public class MovieFactory
             return false;
 
         var genres = _genreService.GetGenresForMovie(tmdbMovie);
-        var people = await _personFactory.GetPeopleForMovie(tmdbMovie);
+        var people = await _personService.CreatePeopleForMovie(tmdbMovie);
         
         var film = new Film
         {
@@ -49,61 +48,14 @@ public class MovieFactory
             BackdropUrl = tmdbMovie.BackdropPath
         };
 
-        AddGenresToMovie(genres, film);
-        AddPersonToMovie(people, film);
+        _movieService.AddGenres(genres, film);
+        _movieService.AddPersonToMovie(people, film);
         
         _db.Films.Add(film);
 
         await _db.SaveChangesAsync();
 
         return true;
-    }
-
-    private void AddPersonToMovie(List<(Person Person, string Departement)>? people, Film film)
-    {
-        if(people == null)
-            return;
-        
-        foreach (var p in people)
-        {
-            var person = p.Person;
-            var personType = _personTypeFactory.GetPersonType(p.Departement);
-
-            if(film.Filmpeople.Any(f => f.Film.Id == film.Id &&
-                                        f.Person.Id == person.Id &&
-                                        f.PersonType.Id == personType.Id))
-            {
-                return;
-            }
-            
-            var filmPerson = new Filmperson
-            {
-                Film = film,
-                Person = person,
-                PersonType = personType
-            };
-
-            if (person.Id == 947)
-            {
-                Console.WriteLine("tset");
-            }
-
-            film.Filmpeople.Add(filmPerson);
-        }
-    }
-
-    private void AddGenresToMovie(List<Genre> genres, Film film)
-    {
-        foreach (var genre in genres)
-        {
-            var filmGenre = new Filmgenre
-            {
-                Film = film,
-                Genre = genre
-            };
-            
-            film.Filmgenres.Add(filmGenre);
-        }
     }
 
     private bool MovieExists(int id)

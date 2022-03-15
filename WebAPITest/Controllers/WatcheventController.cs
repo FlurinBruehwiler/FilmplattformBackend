@@ -48,8 +48,6 @@ public class WatcheventController : ControllerBase
         if (movie == null)
             return NotFound($"No movie with id {movieId} found");
 
-
-
         var watchEvents = _db.Watchevents.Where(x => x.FilmId == movieId && x.Text != null);
         var list = watchEvents.ToArray().ToList();
         var dtoWatchEvents = list.Select(x => _watcheventFactory.CreateDtoWatchevent(x)).ToList();

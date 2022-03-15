@@ -31,4 +31,25 @@ public class TmdbService
 
         return tmdbMovie;
     }
+    
+    public async Task<TmdbMovieCredits> GetPeople(int id)
+    {
+        var url = $"movie/{id}/credits?api_key={_apiKey}";
+        
+        TmdbMovieCredits? tmdbCredits;
+        var client = _clientFactory.CreateClient("tmdb");
+        
+        try
+        {
+            tmdbCredits = await client.GetFromJsonAsync<TmdbMovieCredits>(url);
+            if (tmdbCredits == null)
+                throw new Exception();
+        }
+        catch (Exception)
+        {
+            return new TmdbMovieCredits();
+        }
+
+        return tmdbCredits;
+    }
 }
