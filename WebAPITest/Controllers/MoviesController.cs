@@ -46,7 +46,7 @@ public class MoviesController : ControllerBase
     }
     
     [HttpGet("GetPersonalMovieDetails/{id}"), Authorize]
-    public async Task<ActionResult<DtoMovieDetails>> GetMoviePersonal(int id)
+    public ActionResult<DtoMovieDetails> GetMoviePersonal(int id)
     {
         if (!MovieExistsOnDb(id))
         {

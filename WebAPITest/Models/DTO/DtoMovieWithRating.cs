@@ -1,6 +1,6 @@
 namespace WebAPITest.Models.DTO;
 
-public class DtoMovieWithWatchevents
+public class DtoMovieWithRating
 {
     public List<int> Ratings { get; set; } = new();
     public DateTime LastTimeWatched { get; set; }

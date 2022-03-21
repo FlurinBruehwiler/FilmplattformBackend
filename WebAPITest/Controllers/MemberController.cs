@@ -1,9 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using WebAPITest.Models.DB;
 using WebAPITest.Models.DTO;
-using WebAPITest.Services;
 
 namespace WebAPITest.Controllers;
 
@@ -12,16 +10,14 @@ namespace WebAPITest.Controllers;
 public class MemberController : ControllerBase
 {
     private readonly FilmplattformContext _db;
-    private readonly UserService _userService;
 
-    public MemberController(FilmplattformContext db, UserService userService)
+    public MemberController(FilmplattformContext db)
     {
         _db = db;
-        _userService = userService;
     }
     
     [HttpGet("{id}/Movies")]
-    public async Task<ActionResult<List<DtoMovieWithWatchevents>>> GetMovies(int id)
+    public ActionResult<List<DtoMovieWithRating>> GetMovies(int id)
     {
         var user = _db.Members.Where(x => x.Id == id)
             .Include(x => x.Watchevents)
@@ -30,39 +26,26 @@ public class MemberController : ControllerBase
 
         if (user is null)
             return NotFound();
-        List<DtoMovieWithWatchevents> output = new();
-
-        foreach (var watchevent in user.Watchevents)
+        
+        var result = user.Watchevents.GroupBy(x => x.FilmId).Select(watchEvents =>
         {
-            var dtoMovieWithWatchevent = output.FirstOrDefault(x => x.Id == watchevent.FilmId);
-            
-            if (dtoMovieWithWatchevent is not null)
+            var watchEvent = watchEvents.First();
+            return new DtoMovieWithRating
             {
-                dtoMovieWithWatchevent.Ratings.Add(watchevent.Rating ?? 0);
-            }
-            else
-            {
-                output.Add(new DtoMovieWithWatchevents
-                {
-                    Id = watchevent.FilmId,
-                    Ratings = new List<int>{watchevent.Rating},
-                    Title = watchevent.Film.Title,
-                    MoviePoster = watchevent.Film.PosterUrl,
-                    ReleaseDate = watchevent.Film.ReleaseDate,
-                    LastTimeWatched = watchevent.Film.
-                    
-                    
-                });
-            }
-            
-            
-        }
+                Id = watchEvent.FilmId,
+                Ratings = watchEvents.Where(x => x.Rating != 0).Select(x => x.Rating).ToList(),
+                Title = watchEvent.Film.Title,
+                MoviePoster = watchEvent.Film.PosterUrl,
+                ReleaseDate = watchEvent.Film.ReleaseDate,
+                LastTimeWatched = watchEvents.OrderByDescending(x => x.Date).First().Date
+            };
+        }).ToList();
 
-        return Ok(output);
+        return Ok(result);
     }
     
     [HttpGet("{id}/Followers")]
-    public async Task<ActionResult<List<DtoMember>>> GetFollowers(int id)
+    public ActionResult<List<DtoMember>> GetFollowers(int id)
     {
         return Ok(_db.Followings.Where(x => x.FollowingId == id).Select(x => new DtoMember
         {
@@ -73,7 +56,7 @@ public class MemberController : ControllerBase
     }
     
     [HttpGet("{id}/Following")]
-    public async Task<ActionResult<List<DtoMember>>> GetFollowing(int id)
+    public ActionResult<List<DtoMember>> GetFollowing(int id)
     {
         return Ok(_db.Followings.Where(x => x.FollowerId == id).Select(x => new DtoMember
         {

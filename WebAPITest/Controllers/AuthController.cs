@@ -22,11 +22,14 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     public async Task<ActionResult<string>> Register(DtoUser user)
     {
+        if (_db.Members.Any(x => x.Username == user.Username))
+            return BadRequest("This Username is already taken");
+        
+        if (_db.Members.Any(x => x.Email == user.Email))
+            return BadRequest("This Email is already taken");
+        
         _authService.CreatePasswordHash(user.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
-        if (_db.Members.Any(x => x.Username == user.Username))
-            return BadRequest("User with this Username already Exists");
-        
         _db.Members.Add(new Member
         {
             Username = user.Username,
@@ -40,14 +43,20 @@ public class AuthController : ControllerBase
 
         var member = _db.Members.FirstOrDefault(x => x.Username == user.Username);
         
-        if(member != null)
-            return Ok(_authService.CreateToken(member));
+        if(member == null)
+            return StatusCode(500);
+        
+        Response.Cookies.Append("X-Access-Token", _authService.CreateToken(member), new CookieOptions
+        {
+            HttpOnly = true,
+            SameSite = SameSiteMode.Strict
+        });
 
-        return StatusCode(500);
+        return Ok();
     }
 
     [HttpPost("login")]
-    public async Task<ActionResult<string>> Login(DtoLogin request)
+    public ActionResult Login(DtoLogin request)
     {
         var member = _db.Members.AsNoTracking().FirstOrDefault(x => x.Username == request.Username);
         
@@ -60,8 +69,13 @@ public class AuthController : ControllerBase
         {
             return BadRequest("Wrong Password");
         }
-
-        var token = _authService.CreateToken(member);
-        return Ok(token);
+        
+        Response.Cookies.Append("X-Access-Token", _authService.CreateToken(member), new CookieOptions
+        {
+            HttpOnly = true,
+            SameSite = SameSiteMode.Strict
+        });
+        
+        return Ok();
     }
 }

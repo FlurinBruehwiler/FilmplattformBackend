@@ -49,7 +49,7 @@ public class DtoMovieFactory
             ReleaseDate = film.ReleaseDate,
             Genres = film.Filmgenres.Select(x => new DtoGenre(x.Genre)).ToList(),
             People = film.Filmpeople.Select(x => new DtoPerson(x)).ToList(),
-            AverageRating = film.Watchevents.Where(x => x.Rating is not null).Select(x => x.Rating).Sum() ?? 0
+            AverageRating = film.Watchevents.Where(x => x.Rating != 0).Select(x => x.Rating).Sum()
         };
         
         return dtoMovie;

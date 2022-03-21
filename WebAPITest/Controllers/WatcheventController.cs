@@ -41,7 +41,7 @@ public class WatcheventController : ControllerBase
     }
     
     [HttpGet("GetReviews/{movieId}")]
-    public async Task<ActionResult<DtoWatchevents>> GetWatchevents(int movieId)
+    public ActionResult<DtoWatchevents> GetWatchevents(int movieId)
     {
         var movie = _movieService.GetMovieById(movieId);
         

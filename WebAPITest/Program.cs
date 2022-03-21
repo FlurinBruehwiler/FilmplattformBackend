@@ -17,6 +17,14 @@ builder.Services.AddHttpClient("tmdb", c =>
 });
 // Add services to the container.
 
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policyBuilder =>
+    {
+        policyBuilder.WithOrigins("http://localhost:3000").WithHeaders("content-type");
+    });
+});
+
 builder.Services.AddControllers();
 builder.Services.AddDbContext<FilmplattformContext>(options =>
 {
@@ -72,6 +80,14 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuer = false,
             ValidateAudience = false
         };
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                context.Token = context.Request.Cookies["X-Access-Token"];
+                return Task.CompletedTask;
+            }
+        };
     });
 
 
@@ -87,7 +103,11 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+app.UseRouting();
+app.UseCors();
+
 app.UseHttpsRedirection();
+
 
 app.UseAuthentication();
 
