@@ -8,7 +8,7 @@ namespace WebAPITest.Models.DB
     public partial class Watchevent
     {
         public int Id { get; set; }
-        public int? Rating { get; set; }
+        public int Rating { get; set; }
         public string Text { get; set; }
         public DateTime Date { get; set; }
         public int MemberId { get; set; }

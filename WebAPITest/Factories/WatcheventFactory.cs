@@ -15,11 +15,11 @@ public class WatcheventFactory
         _db = db;
     }
     
-    public DtoWatchevent CreateDtoWatchevent(Watchevent watchevent)
+    public DtoWatcheventDetails CreateDtoWatchevent(Watchevent watchevent)
     {
         var user = _userService.GetUserById(watchevent.MemberId);
         
-        var dtoWatchevent = new DtoWatchevent
+        var dtoWatchevent = new DtoWatcheventDetails
         {
             Id = watchevent.Id,
             Rating = watchevent.Rating,

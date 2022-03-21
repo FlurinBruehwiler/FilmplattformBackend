@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using WebAPITest.Models.DB;
 using WebAPITest.Models.DTO;
 using WebAPITest.Services;
@@ -20,29 +21,44 @@ public class MemberController : ControllerBase
     }
     
     [HttpGet("{id}/Movies")]
-    public async Task<ActionResult<List<DtoMovie>>> GetMovies(int id)
+    public async Task<ActionResult<List<DtoMovieWithWatchevents>>> GetMovies(int id)
     {
         var user = _db.Members.Where(x => x.Id == id)
-            .Include(x => x.Filmmembers)
-            .ThenInclude(x => x.Film)
             .Include(x => x.Watchevents)
             .ThenInclude(x => x.Film)
             .FirstOrDefault();
 
         if (user is null)
             return NotFound();
+        List<DtoMovieWithWatchevents> output = new();
 
-        return Ok(user.Filmmembers.Where(x => x.LikeBool).Select(x => new DtoMovie
+        foreach (var watchevent in user.Watchevents)
         {
-            Id = x.Film.Id,
-            Title = x.Film.Title,
-            PosterPath = x.Film.PosterUrl
-        }).Concat(user.Watchevents.Select(x => new DtoMovie
-        {
-            Id = x.Film.Id,
-            Title = x.Film.Title,
-            PosterPath = x.Film.PosterUrl
-        })).ToList());
+            var dtoMovieWithWatchevent = output.FirstOrDefault(x => x.Id == watchevent.FilmId);
+            
+            if (dtoMovieWithWatchevent is not null)
+            {
+                dtoMovieWithWatchevent.Ratings.Add(watchevent.Rating ?? 0);
+            }
+            else
+            {
+                output.Add(new DtoMovieWithWatchevents
+                {
+                    Id = watchevent.FilmId,
+                    Ratings = new List<int>{watchevent.Rating},
+                    Title = watchevent.Film.Title,
+                    MoviePoster = watchevent.Film.PosterUrl,
+                    ReleaseDate = watchevent.Film.ReleaseDate,
+                    LastTimeWatched = watchevent.Film.
+                    
+                    
+                });
+            }
+            
+            
+        }
+
+        return Ok(output);
     }
     
     [HttpGet("{id}/Followers")]

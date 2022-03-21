@@ -4,7 +4,7 @@ namespace WebAPITest.Models.DTO;
 
 public class DtoWatchevents
 {
-    public DtoWatchevents(Film movie, string directorName, List<DtoWatchevent> watchevents)
+    public DtoWatchevents(Film movie, string directorName, List<DtoWatcheventDetails> watchevents)
     {
         FilmId = movie.Id;
         FilmTitle = movie.Title;
@@ -21,5 +21,5 @@ public class DtoWatchevents
     public string DirectorName { get; set; }
     public string PosterUrl { get; set; }
     public string BackdropUrl { get; set; }
-    public List<DtoWatchevent> Watchevents { get; set; }
+    public List<DtoWatcheventDetails> Watchevents { get; set; }
 }

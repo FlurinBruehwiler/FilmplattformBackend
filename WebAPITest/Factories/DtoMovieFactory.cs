@@ -90,7 +90,7 @@ public class DtoMovieFactory
             .Select(list => new DtoList {Id = list.Id, Name = list.Name}).ToList();
     }
 
-    private List<DtoWatchevent> GetWatchEvents(Member user, int movieId)
+    private List<DtoWatcheventDetails> GetWatchEvents(Member user, int movieId)
     {
         return user.FollowingFollowingNavigations.SelectMany(x => x.Follower.Watchevents.Where(f => f.FilmId == movieId))
             .Concat(user.Watchevents.Where(x => x.FilmId == movieId))

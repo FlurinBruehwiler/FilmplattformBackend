@@ -1,6 +1,6 @@
 ﻿namespace WebAPITest.Models.DTO;
 
-public class DtoWatchevent
+public class DtoWatcheventDetails
 {
     public int Id { get; set; }
     public DateTime WatchDate { get; set; }
